@@ -26,7 +26,6 @@ export default function ContactSection() {
       time: 'Place du village',
       note: 'Ambiance médiévale garantie',
     },
-    
   ]
 
   return (
@@ -108,15 +107,15 @@ export default function ContactSection() {
             <div className="bg-stone-800 rounded-2xl p-8">
               <h4 className="text-2xl font-serif mb-6">Horaires d&apos;ouverture</h4>
               <div className="space-y-4 text-stone-300">
-                <div className="flex justify-between border-b border-stone-700 pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-stone-700 pb-3">
                   <span>Lundi - Samedi</span>
                   <span className="text-amber-400 font-medium">17h - 19h</span>
                 </div>
-                <div className="flex justify-between border-b border-stone-700 pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-stone-700 pb-3">
                   <span>Dimanche</span>
                   <span className="text-amber-400 font-medium">Marché de Najac</span>
                 </div>
-                <div className="flex justify-between border-b border-stone-700 pb-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-stone-700 pb-3">
                   <span>Jeudi</span>
                   <span className="text-amber-400 font-medium">Marché Villefranche</span>
                 </div>
