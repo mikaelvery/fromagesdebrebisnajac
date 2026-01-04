@@ -43,17 +43,17 @@ export default function Hero() {
       </div>
 
       {/* Logo AB */}
-      <div className="absolute top-20 right-4 md:top-24 md:right-16 z-20">
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl p-2 md:p-4 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="w-12 h-12 md:w-20 md:h-20 bg-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center">
+      <div className="absolute top-20 right-3 md:top-24 md:right-16 z-20">
+        <div className="bg-white/95 backdrop-blur-sm rounded-md md:rounded-2xl p-1 md:p-4 shadow-lg md:shadow-xl transform hover:scale-105 transition-transform duration-300">
+          <div className="w-7 h-7 md:w-20 md:h-20 bg-emerald-600 rounded md:rounded-xl flex items-center justify-center">
             <div className="text-center text-white">
-              <div className="text-lg md:text-3xl font-bold">AB</div>
-              <div className="text-[6px] md:text-[8px] font-medium mt-0.5 md:mt-1 tracking-wider">
+              <div className="text-[10px] md:text-3xl font-bold leading-none">AB</div>
+              <div className="text-[4px] md:text-[8px] font-medium md:mt-1 tracking-wider leading-none">
                 CERTIFIÉ
               </div>
             </div>
           </div>
-          <div className="text-center mt-1 md:mt-2 text-[8px] md:text-xs text-stone-700 font-medium leading-tight">
+          <div className="text-center mt-0.5 md:mt-2 text-[6px] md:text-xs text-stone-700 font-medium leading-[8px] md:leading-tight">
             Agriculture
             <br />
             Biologique
