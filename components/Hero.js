@@ -53,7 +53,7 @@ export default function Hero() {
               </div>
             </div>
           </div>
-          <div className="text-center mt-0.5 md:mt-2 text-[6px] md:text-xs text-stone-700 font-medium leading-[8px] md:leading-tight">
+          <div className="text-center mt-0.5 md:mt-2 text-[6px] md:text-xs text-stone-700 font-medium leading-2 md:leading-tight">
             Agriculture
             <br />
             Biologique

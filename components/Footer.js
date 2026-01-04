@@ -14,6 +14,9 @@ export default function Footer() {
           <div className="text-sm text-center">
             <div>© 2026 Ferme du Treil - Tous droits réservés</div>
             <div className="mt-2">Mentions légales · RGPD</div>
+            <div className="mt-2 text-stone-500">
+              Site réalisé par <a href="https://www.linkedin.com/in/votre-profil" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors">Mikael Very</a>
+            </div>
           </div>
         </div>
       </div>
