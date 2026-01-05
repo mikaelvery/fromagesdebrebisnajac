@@ -13,8 +13,9 @@ export default function Hero() {
   return (
     <section
       id="accueil"
-      className="relative h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
     >
+
       {/* Image de fond avec overlay */}
       <div className="absolute inset-0">
         <Image
@@ -115,7 +116,8 @@ export default function Hero() {
           -translate-x-1/2
           animate-bounce-slow
           text-white/80 hover:text-white transition-colors
-          bottom-[calc(env(safe-area-inset-bottom)+1.5rem)]
+          bottom-[calc(env(safe-area-inset-bottom)+2.5rem)]
+          md:bottom-10
         "
         aria-label="Défiler vers le bas"
       >
