@@ -12,9 +12,11 @@ export default function Hero() {
 
   return (
     <section
-      id="accueil"
-      className="relative min-h-svh flex items-center justify-center overflow-hidden pb-20 md:pb-0"
-    >
+  id="accueil"
+  className="relative min-h-svh overflow-hidden pb-20 md:pb-0
+             flex flex-col md:flex-row items-center md:items-center justify-start md:justify-center"
+>
+
 
       {/* Image de fond avec overlay */}
       <div className="absolute inset-0">
@@ -25,7 +27,7 @@ export default function Hero() {
           priority
           className="
             object-cover
-            object-[calc(50%-90px)_top]
+            object-[calc(50%-0px)_top]
             md:object-center
           "
         />
@@ -62,7 +64,7 @@ export default function Hero() {
       </div>
 
       {/* Contenu principal */}
-      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl mt-8 md:mt-0">
+      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl mt-21 md:mt-0">
         {/* Badge localisation */}
         <div className="inline-flex items-center gap-1.5 md:gap-2 mb-6 md:mb-8 px-3 md:px-5 py-1.5 md:py-2.5 bg-white/15 backdrop-blur-md rounded-full text-white text-xs md:text-sm border border-white/20">
           <svg className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20">
