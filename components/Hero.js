@@ -120,7 +120,7 @@ export default function Hero() {
           -translate-x-1/2
           animate-bounce-slow
           text-white/80 hover:text-white transition-colors
-          bottom-[calc(env(safe-area-inset-bottom)+1.5rem)]
+          bottom-[calc(env(safe-area-inset-bottom)+0.5rem)]
           md:bottom-10
         "
         aria-label="Défiler vers le bas"
