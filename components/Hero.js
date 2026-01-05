@@ -13,7 +13,7 @@ export default function Hero() {
   return (
     <section
       id="accueil"
-      className="relative min-h-svh flex items-center justify-center overflow-hidden"
+      className="relative min-h-svh flex items-center justify-center overflow-hidden pb-20 md:pb-0"
     >
 
       {/* Image de fond avec overlay */}
@@ -25,7 +25,7 @@ export default function Hero() {
           priority
           className="
             object-cover
-            object-[center_top]
+            object-[calc(50%-90px)_top]
             md:object-center
           "
         />
@@ -120,7 +120,7 @@ export default function Hero() {
           -translate-x-1/2
           animate-bounce-slow
           text-white/80 hover:text-white transition-colors
-          bottom-[calc(env(safe-area-inset-bottom)+0.5rem)]
+          bottom-[calc(env(safe-area-inset-bottom)+0rem)]
           md:bottom-10
         "
         aria-label="Défiler vers le bas"
