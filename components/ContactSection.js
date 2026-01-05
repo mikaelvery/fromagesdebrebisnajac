@@ -56,7 +56,7 @@ export default function ContactSection() {
           {markets.map((market, index) => (
             <div
               key={index}
-              className={`bg-gradient-to-br ${cardGradient[market.color]} rounded-2xl p-8`}
+              className={`bg-linear-to-br ${cardGradient[market.color]} rounded-2xl p-8`}
             >
               <div
                 className={`${iconBgColor[market.color]} w-12 h-12 rounded-xl flex items-center justify-center text-white mb-6`}
@@ -85,7 +85,7 @@ export default function ContactSection() {
                   <Phone className="mr-4 mt-1 text-amber-400" size={20} />
                   <div>
                     <div className="font-medium mb-1">Téléphone</div>
-                    <div className="text-stone-300">06 30 54 28 58</div>
+                    <div className="text-stone-300">07 62 38 20 72</div>
                     <div className="text-stone-300">06 75 98 22 95</div>
                   </div>
                 </div>
@@ -94,7 +94,7 @@ export default function ContactSection() {
                   <div>
                     <div className="font-medium mb-1">Email</div>
                     <div className="text-stone-300">
-                      lafermedutreil@laposte.net
+                      lafermedutreil@gmail.com
                     </div>
                   </div>
                 </div>

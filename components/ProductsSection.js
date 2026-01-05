@@ -110,7 +110,7 @@ export default function ProductsSection() {
     <>
       <section
         id="produits"
-        className="py-32 bg-gradient-to-br from-stone-100 to-amber-50"
+        className="py-32 bg-linear-to-br from-stone-100 to-amber-50"
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
@@ -133,7 +133,7 @@ export default function ProductsSection() {
                 onClick={() => setSelectedCategory(category)}
                 className="card-hover bg-white rounded-2xl p-8 shadow-lg cursor-pointer group"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl mb-6 flex items-center justify-center text-white text-2xl transform group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 bg-linear-to-br from-amber-500 to-amber-600 rounded-2xl mb-6 flex items-center justify-center text-white text-2xl transform group-hover:scale-110 transition-transform">
                   {category.icon}
                 </div>
                 <h3 className="text-2xl font-serif text-stone-900 mb-4">
@@ -175,21 +175,22 @@ export default function ProductsSection() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header du modal */}
-            <div className="sticky top-0 bg-gradient-to-br from-amber-500 to-amber-600 text-white p-8 rounded-t-3xl z-10">
+            <div className="sticky top-0 bg-linear-to-br from-emerald-500 to-emerald-600 text-white p-6 md:p-8 rounded-t-3xl z-10">
               <button
                 onClick={() => setSelectedCategory(null)}
-                className="absolute top-6 right-6 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+                className="absolute top-4 md:top-6 right-4 md:right-6 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
               >
                 <X size={24} />
               </button>
-              <div className="text-6xl mb-4">{selectedCategory.icon}</div>
-              <h3 className="text-4xl font-serif mb-2">
+              <div className="text-5xl md:text-6xl mb-3 md:mb-4">{selectedCategory.icon}</div>
+              <h3 className="text-2xl md:text-4xl font-serif mb-1 md:mb-2">
                 {selectedCategory.title}
               </h3>
-              <p className="text-amber-100 text-lg">
+              <p className="text-sm md:text-lg text-amber-100">
                 {selectedCategory.description}
               </p>
             </div>
+
 
             {/* Liste des produits */}
             <div className="p-8">
@@ -201,16 +202,16 @@ export default function ProductsSection() {
                   >
                     {/* Image du produit ou placeholder */}
                     {product.image ? (
-                      <div className="relative w-full h-48 mb-4">
+                      <div className="relative w-full h-40 md:h-48 mb-4 overflow-hidden rounded-xl shadow-inner">
                         <Image
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover rounded-xl"
+                          className="object-cover transition-transform duration-300 hover:scale-105"
                         />
                       </div>
                     ) : (
-                      <div className="w-full h-48 bg-gradient-to-br from-amber-200 to-stone-300 rounded-xl mb-4 flex items-center justify-center text-6xl">
+                      <div className="w-full h-40 md:h-48 bg-gradient-to-br from-amber-200 to-stone-300 rounded-xl mb-4 flex items-center justify-center text-5xl md:text-6xl">
                         {selectedCategory.icon}
                       </div>
                     )}
