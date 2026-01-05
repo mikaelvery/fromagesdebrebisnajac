@@ -28,6 +28,18 @@ export default function ContactSection() {
     },
   ]
 
+  // Map statique pour les couleurs de fond des icônes
+  const iconBgColor = {
+    amber: 'bg-amber-500',
+    emerald: 'bg-emerald-600',
+  }
+
+  // Map statique pour les dégradés des cartes
+  const cardGradient = {
+    amber: 'from-amber-50 to-stone-50',
+    emerald: 'from-emerald-50 to-stone-50',
+  }
+
   return (
     <section id="contact" className="py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6">
@@ -44,12 +56,10 @@ export default function ContactSection() {
           {markets.map((market, index) => (
             <div
               key={index}
-              className={`bg-linear-to-br from-${market.color}-50 to-stone-50 rounded-2xl p-8`}
+              className={`bg-gradient-to-br ${cardGradient[market.color]} rounded-2xl p-8`}
             >
               <div
-                className={`w-12 h-12 bg-${market.color}-${
-                  market.color === 'emerald' ? '600' : '500'
-                } rounded-xl flex items-center justify-center text-white mb-6`}
+                className={`${iconBgColor[market.color]} w-12 h-12 rounded-xl flex items-center justify-center text-white mb-6`}
               >
                 {market.icon}
               </div>
@@ -75,7 +85,7 @@ export default function ContactSection() {
                   <Phone className="mr-4 mt-1 text-amber-400" size={20} />
                   <div>
                     <div className="font-medium mb-1">Téléphone</div>
-                    <div className="text-stone-300">07 62 38 20 72</div>
+                    <div className="text-stone-300">06 30 54 28 58</div>
                     <div className="text-stone-300">06 75 98 22 95</div>
                   </div>
                 </div>
@@ -84,7 +94,7 @@ export default function ContactSection() {
                   <div>
                     <div className="font-medium mb-1">Email</div>
                     <div className="text-stone-300">
-                      lafermedutreil@gmail.com
+                      lafermedutreil@laposte.net
                     </div>
                   </div>
                 </div>
