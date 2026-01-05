@@ -49,21 +49,15 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div className="relative h-150 group">
+          <div className="relative h-96 group">
+            {/* Bordure décorative animée */}
             <div className="absolute inset-0 bg-linear-to-br from-amber-200 to-emerald-300 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-500"></div>
-            {/* Pour utiliser une vraie image, décommenter et remplacer :
-            <Image
-              src="/images/ferme-1.jpg"
-              alt="Paysage de la ferme"
-              fill
-              className="object-cover rounded-3xl"
-            />
-            */}
-            <div className="absolute inset-0 bg-linear-to-tr from-stone-700 to-stone-500 rounded-3xl flex items-center justify-center text-white text-2xl font-serif p-8 text-center">
-              📸
-              <br />
-              Paysage de la ferme
-              <br />& Troupeau de brebis
+            
+            {/* Placeholder en attendant la photo */}
+            <div className="absolute inset-2 bg-linear-to-tr  from-stone-700 to-stone-500 rounded-3xl flex flex-col items-center justify-center text-white text-center p-8 group-hover:from-stone-800 group-hover:to-stone-600 transition-all duration-500">
+              <div className="text-6xl mb-4">📸</div>
+              <p className="text-2xl font-serif mb-2">Paysage de la ferme</p>
+              <p className="text-lg opacity-90">& Troupeau de brebis</p>
             </div>
           </div>
         </div>

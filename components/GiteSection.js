@@ -23,22 +23,17 @@ export default function GiteSection() {
     >
       <div className="absolute inset-0 opacity-10 dot-pattern"></div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="relative h-125">
-            <div className="absolute inset-0 bg-linear-to-br from-amber-600 to-emerald-600 rounded-3xl transform -rotate-3"></div>
-            {/* Pour utiliser une vraie image :
-            <Image
-              src="/images/gite-1.jpg"
-              alt="Gîte"
-              fill
-              className="object-cover rounded-3xl"
-            />
-            */}
-            <div className="absolute inset-0 bg-stone-700 rounded-3xl flex items-center justify-center text-white text-xl font-serif p-8 text-center">
-              📸
-              <br />
-              Gîte & Chambres d&apos;Hôtes
+          <div className="relative h-96 group">
+            {/* Bordure décorative animée */}
+            <div className="absolute inset-0 bg-linear-to-br from-amber-600 to-emerald-600 rounded-3xl transform -rotate-3 group-hover:-rotate-6 transition-transform duration-500"></div>
+            
+            {/* Placeholder en attendant la photo */}
+            <div className="absolute inset-2 bg-linear-to-tr from-stone-700 to-stone-500 rounded-3xl flex flex-col items-center justify-center text-white text-center p-8 group-hover:from-stone-800 group-hover:to-stone-600 transition-all duration-500">
+              <div className="text-6xl mb-4">🏡</div>
+              <p className="text-2xl font-serif mb-2">Gîte</p>
+              <p className="text-lg opacity-90">& Chambres d&apos;Hôtes</p>
             </div>
           </div>
 

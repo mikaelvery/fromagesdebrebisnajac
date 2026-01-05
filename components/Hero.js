@@ -17,29 +17,29 @@ export default function Hero() {
     >
       {/* Image de fond avec overlay */}
       <div className="absolute inset-0">
-        {/* image :
         <Image
-          src="/images/hero-background.jpg"
+          src="/images/hero-background.png"
           alt="Ferme du Treil"
           fill
           className="object-cover"
           priority
         />
-        */}
-        <div className="absolute inset-0 bg-linear-to-br from-emerald-900 via-emerald-800 to-emerald-700"></div>
-        
-        {/* Pattern subtil */}
+
+        {/* Overlay vert principal */}
+        <div className="absolute inset-0 bg-emerald-900/60"></div>
+
+        {/* Gradient vert → transparent */}
+        <div className="absolute inset-0 bg-linear-to-t from-emerald-950/80 via-emerald-900/40 to-transparent"></div>
+
+        {/* Grain / pattern */}
         <div
-          className="absolute inset-0 opacity-10"
+          className="absolute inset-0 opacity-[0.08]"
           style={{
             backgroundImage:
               'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
             backgroundSize: '40px 40px',
           }}
-        ></div>
-        
-        {/* Gradient de profondeur */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-black/30"></div>
+        />
       </div>
 
       {/* Logo AB officiel */}
