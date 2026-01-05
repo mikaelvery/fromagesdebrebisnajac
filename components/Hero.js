@@ -13,7 +13,7 @@ export default function Hero() {
   return (
     <section
       id="accueil"
-      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden"
+      className="relative min-h-svh flex items-center justify-center overflow-hidden"
     >
 
       {/* Image de fond avec overlay */}
@@ -22,8 +22,12 @@ export default function Hero() {
           src="/images/hero-background.png"
           alt="Ferme du Treil"
           fill
-          className="object-cover"
           priority
+          className="
+            object-cover
+            object-[center_top]
+            md:object-center
+          "
         />
 
         {/* Overlay vert principal */}
@@ -116,7 +120,7 @@ export default function Hero() {
           -translate-x-1/2
           animate-bounce-slow
           text-white/80 hover:text-white transition-colors
-          bottom-[calc(env(safe-area-inset-bottom)+2.5rem)]
+          bottom-[calc(env(safe-area-inset-bottom)+1.5rem)]
           md:bottom-10
         "
         aria-label="Défiler vers le bas"
