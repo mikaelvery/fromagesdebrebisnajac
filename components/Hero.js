@@ -23,7 +23,10 @@ export default function Hero() {
           alt="Ferme du treil - Laurie et Sacha - Brebis et paysage aveyronnais"
           fill
           priority
-          className="object-cover"
+          className="object-cover md:object-center"
+          style={{
+            objectPosition: window.innerWidth < 768 ? '65% center' : 'center'
+          }}
           quality={90}
         />
 
@@ -45,22 +48,22 @@ export default function Hero() {
       </div>
 
       {/* Logo AB - discret */}
-      <div className="absolute top-20 right-4 md:top-8 md:right-8 z-20">
-        <div className="group relative">
-          <div className="absolute inset-0 bg-emerald-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          <div className="relative bg-white/90 backdrop-blur-sm rounded-lg p-1.5 md:p-3 shadow-xl transform group-hover:scale-105 transition-all duration-300 border border-white/20">
-            <Image
-              src="/images/AB_cert_HD.jpg"
-              alt="Agriculture Biologique Certifiée"
-              width={60}
-              height={60}
-              className="w-10 h-10 md:w-16 md:h-16 object-contain"
-              priority
-            />
-          </div>
-        </div>
-      </div>
+<div className="absolute top-20 right-4 md:top-24 md:right-8 lg:top-32 lg:right-8 xl:top-36 xl:right-12 z-20">
+  <div className="group relative">
+    <div className="absolute inset-0 bg-emerald-400/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    
+    <div className="relative bg-white/90 backdrop-blur-sm rounded-lg p-1.5 md:p-3 shadow-xl transform group-hover:scale-105 transition-all duration-300 border border-white/20">
+      <Image
+        src="/images/AB_cert_HD.jpg"
+        alt="Agriculture Biologique Certifiée"
+        width={60}
+        height={60}
+        className="w-10 h-10 md:w-16 md:h-16 object-contain"
+        priority
+      />
+    </div>
+  </div>
+</div>
 
       {/* Contenu principal */}
       <div className="relative z-10 text-center px-4 max-w-5xl w-full">
@@ -131,15 +134,15 @@ export default function Hero() {
 
       {/* Scroll indicator */}
       <button
-        onClick={() => scrollToSection('ferme')}
-        className="absolute left-1/2 -translate-x-1/2 bottom-4 md:bottom-8 text-white/60 hover:text-white transition-all duration-300"
-        aria-label="Défiler vers le bas"
-      >
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-[10px] md:text-xs uppercase tracking-wider font-medium"></span>
-          <ChevronDown size={20} strokeWidth={1.5} className="md:w-7 md:h-7" />
-        </div>
-      </button>
+  onClick={() => scrollToSection('ferme')}
+  className="absolute left-1/2 -translate-x-1/2 bottom-16 md:bottom-8 text-white/60 hover:text-white transition-all duration-300"
+  aria-label="Défiler vers le bas"
+>
+  <div className="flex flex-col items-center gap-1">
+    <span className="text-[10px] md:text-xs uppercase tracking-wider font-medium"></span>
+    <ChevronDown size={20} strokeWidth={1.5} className="md:w-7 md:h-7" />
+  </div>
+</button>
     </section>
   )
 }
