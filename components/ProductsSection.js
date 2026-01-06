@@ -97,9 +97,9 @@ export default function ProductsSection() {
           image: null,
         },
         {
-          name: 'Produits de Saison',
-          description: 'Créations saisonnières',
-          details: 'Découvrez nos innovations selon les saisons et les inspirations',
+          name: 'Compotes de Saison au Chaudron',
+          description: 'Fruits du moment, cuites lentement',
+          details: 'Préparées au chaudron selon la tradition, nos compotes révèlent toute la saveur naturelle des fruits de saison. Un délice artisanal, sucré juste comme il faut, à déguster chaud ou froid.',
           image: null,
         },
       ],
