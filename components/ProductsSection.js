@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 
 export default function ProductsSection() {
@@ -50,7 +50,7 @@ export default function ProductsSection() {
           name: 'Yaourts Nature',
           description: 'Fermiers au lait entier de brebis',
           details: 'Yaourts onctueux et crémeux, nature sans sucre ajouté',
-          image: null, // Ajouter photo si disponible
+          image: null,
         },
         {
           name: 'Yaourts Vanille',
@@ -164,93 +164,116 @@ export default function ProductsSection() {
         </div>
       </section>
 
-      {/* Modal des produits */}
+      {/* Modal moderne et élégante */}
       {selectedCategory && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-stone-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedCategory(null)}
         >
           <div
-            className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl"
             onClick={(e) => e.stopPropagation()}
+            style={{ borderRadius: '2px' }}
           >
-            {/* Header du modal */}
-            <div className="sticky top-0 bg-linear-to-br from-emerald-500 to-emerald-600 text-white p-6 md:p-8 rounded-t-3xl z-10">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className="absolute top-4 md:top-6 right-4 md:right-6 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
-              >
-                <X size={24} />
-              </button>
-              <div className="text-5xl md:text-6xl mb-3 md:mb-4">{selectedCategory.icon}</div>
-              <h3 className="text-2xl md:text-4xl font-serif mb-1 md:mb-2">
-                {selectedCategory.title}
-              </h3>
-              <p className="text-sm md:text-lg text-amber-100">
-                {selectedCategory.description}
-              </p>
+            {/* Header minimaliste et élégant */}
+            <div className="relative bg-stone-900 text-white px-8 py-12">
+              {/* Pattern subtil */}
+              <div className="absolute inset-0 opacity-5 dot-pattern"></div>
+              
+              <div className="relative z-10">
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center hover:bg-white/10 transition-colors rounded-full"
+                >
+                  <X size={20} strokeWidth={1.5} />
+                </button>
+
+                <div className="max-w-3xl">
+                  <div className="inline-block px-4 py-1.5 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-300 text-xs font-medium mb-4 uppercase tracking-wider">
+                    Produits Fermiers Bio
+                  </div>
+                  <h3 className="text-4xl md:text-5xl font-serif mb-3">
+                    {selectedCategory.title}
+                  </h3>
+                  <p className="text-stone-300 text-lg">
+                    {selectedCategory.description}
+                  </p>
+                </div>
+              </div>
             </div>
 
+            {/* Contenu scrollable */}
+            <div className="flex-1 overflow-y-auto bg-stone-50">
+              <div className="p-8 md:p-12">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {selectedCategory.products.map((product, index) => (
+                    <div
+                      key={index}
+                      className="group bg-white border border-stone-200 hover:border-amber-300 transition-all duration-300 overflow-hidden"
+                    >
+                      {/* Image du produit */}
+                      {product.image ? (
+                        <div className="relative w-full h-56 overflow-hidden bg-stone-100">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-56 bg-linear-to-br from-stone-200 to-amber-100 flex items-center justify-center">
+                          <span className="text-6xl opacity-40">{selectedCategory.icon}</span>
+                        </div>
+                      )}
 
-            {/* Liste des produits */}
-            <div className="p-8">
-              <div className="grid md:grid-cols-2 gap-6">
-                {selectedCategory.products.map((product, index) => (
-                  <div
-                    key={index}
-                    className="bg-stone-50 rounded-2xl p-6 hover:shadow-lg transition-shadow"
-                  >
-                    {/* Image du produit ou placeholder */}
-                    {product.image ? (
-                      <div className="relative w-full h-40 md:h-48 mb-4 overflow-hidden rounded-xl shadow-inner">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-cover transition-transform duration-300 hover:scale-105"
-                        />
+                      {/* Info produit */}
+                      <div className="p-6">
+                        <h4 className="text-xl font-serif text-stone-900 mb-2">
+                          {product.name}
+                        </h4>
+                        <p className="text-amber-600 text-sm font-medium mb-3 uppercase tracking-wide">
+                          {product.description}
+                        </p>
+                        <p className="text-stone-600 text-sm leading-relaxed">
+                          {product.details}
+                        </p>
                       </div>
-                    ) : (
-                      <div className="w-full h-40 md:h-48 bg-gradient-to-br from-amber-200 to-stone-300 rounded-xl mb-4 flex items-center justify-center text-5xl md:text-6xl">
-                        {selectedCategory.icon}
-                      </div>
-                    )}
-                    <h4 className="text-xl font-serif text-stone-900 mb-2">
-                      {product.name}
-                    </h4>
-                    <p className="text-amber-600 text-sm font-medium mb-3">
-                      {product.description}
-                    </p>
-                    <p className="text-stone-600 text-sm leading-relaxed">
-                      {product.details}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                    </div>
+                  ))}
+                </div>
 
-              {/* Info supplémentaire */}
-              <div className="mt-8 bg-amber-50 rounded-2xl p-6 border-2 border-amber-200">
-                <div className="flex items-start">
-                  <div className="text-3xl mr-4">ℹ️</div>
-                  <div>
-                    <h5 className="font-serif text-lg text-stone-900 mb-2">
-                      Tous nos produits
-                    </h5>
-                    <p className="text-stone-600 text-sm leading-relaxed">
-                      Sont fabriqués à partir de lait cru entier de nos brebis,
-                      élevées en agriculture biologique. Production artisanale
-                      et fermière dans le respect des traditions.
-                    </p>
+                {/* Bannière info */}
+                <div className="mt-12 bg-amber-50 border-l-4 border-amber-500 p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center shrink-0">
+                      <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 className="font-serif text-lg text-stone-900 mb-2">
+                        Production Artisanale & Biologique
+                      </h5>
+                      <p className="text-stone-600 text-sm leading-relaxed">
+                        Tous nos produits sont fabriqués à partir de lait cru entier de nos brebis,
+                        élevées en agriculture biologique sur 10 hectares. Transformation artisanale
+                        dans le respect des traditions fromagères.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Bouton de fermeture */}
+            {/* Footer avec bouton retour */}
+            <div className="border-t border-stone-200 bg-white px-8 py-6">
               <button
                 onClick={() => setSelectedCategory(null)}
-                className="w-full mt-6 px-8 py-4 bg-stone-900 text-white rounded-full font-medium hover:bg-stone-800 transition-colors"
+                className="group inline-flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors font-medium"
               >
-                Fermer
+                <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                Retour aux catégories
               </button>
             </div>
           </div>
