@@ -132,13 +132,10 @@ export default function Hero() {
       {/* Scroll indicator */}
       <button
         onClick={() => scrollToSection('ferme')}
-        className="absolute left-1/2 -translate-x-1/2 bottom-4 md:bottom-8 text-white/60 hover:text-white transition-all duration-300"
+        className="absolute left-1/2 -translate-x-1/2 bottom-4 md:bottom-8 text-white/60 hover:text-white transition-all duration-300 animate-bounce"
         aria-label="Défiler vers le bas"
       >
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-[10px] md:text-xs uppercase tracking-wider font-medium">Découvrir</span>
-          <ChevronDown size={20} strokeWidth={1.5} className="md:w-7 md:h-7" />
-        </div>
+        <ChevronDown size={24} strokeWidth={1.5} className="md:w-8 md:h-8" />
       </button>
     </section>
   )

@@ -43,3 +43,15 @@ h1, h2, h3, h4, h5, h6 {
 .animate-bounce-slow {
   animation: bounce-slow 3s infinite;
 }
+
+nav, button, .no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Le contenu principal reste sélectionnable */
+main, article, p, h1, h2, h3, h4, h5, h6 {
+  user-select: text;
+}
