@@ -23,7 +23,14 @@ export default function Navigation() {
     }
   }
 
-  const menuItems = ['accueil', 'la ferme', 'produits', 'gîte', 'contact']
+  // Menu avec le bon mapping label → id
+  const menuItems = [
+    { label: 'Accueil', id: 'accueil' },
+    { label: 'La Ferme', id: 'ferme' },
+    { label: 'Produits', id: 'produits' },
+    { label: 'Gîte', id: 'gite' },
+    { label: 'Contact', id: 'contact' },
+  ]
 
   return (
     <nav
@@ -54,21 +61,23 @@ export default function Navigation() {
           </span>
         </div>
 
+        {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-8">
           {menuItems.map((item) => (
-            <li key={item}>
+            <li key={item.id}>
               <button
-                onClick={() => scrollToSection(item)}
-                className={`text-sm uppercase tracking-wider transition-all hover:text-amber-600 ${
+                onClick={() => scrollToSection(item.id)}
+                className={`text-sm uppercase tracking-wider transition-all hover:text-amber-600 cursor-pointer ${
                   scrolled ? 'text-stone-700' : 'text-white'
                 }`}
               >
-                {item}
+                {item.label}
               </button>
             </li>
           ))}
         </ul>
 
+        {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="md:hidden"
@@ -81,16 +90,17 @@ export default function Navigation() {
         </button>
       </div>
 
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl">
           <ul className="py-4">
             {menuItems.map((item) => (
-              <li key={item}>
+              <li key={item.id}>
                 <button
-                  onClick={() => scrollToSection(item)}
-                  className="block w-full text-left px-6 py-3 text-stone-700 hover:bg-stone-50 uppercase tracking-wider"
+                  onClick={() => scrollToSection(item.id)}
+                  className="block w-full text-left px-6 py-3 text-stone-700 hover:bg-stone-50 uppercase tracking-wider cursor-pointer"
                 >
-                  {item}
+                  {item.label}
                 </button>
               </li>
             ))}
