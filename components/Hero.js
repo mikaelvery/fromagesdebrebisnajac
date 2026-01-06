@@ -33,10 +33,10 @@ export default function Hero() {
         />
 
         {/* Overlay vert principal */}
-        <div className="absolute inset-0 bg-emerald-900/60"></div>
+        <div className="absolute inset-0 bg-emerald-900/70"></div>
 
         {/* Gradient vert → transparent */}
-        <div className="absolute inset-0 bg-linear-to-t from-emerald-950/80 via-emerald-900/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-emerald-950 via-emerald-900/50 to-transparent"></div>
 
         {/* Grain / pattern */}
         <div
@@ -120,9 +120,8 @@ export default function Hero() {
           absolute
           left-1/2
           -translate-x-1/2
-          animate-bounce-slow
           text-white/80 hover:text-white transition-colors
-          bottom-[calc(env(safe-area-inset-bottom)+0rem)]
+          bottom-[calc(env(safe-area-inset-bottom)+0.5rem)]
           md:bottom-10
         "
         aria-label="Défiler vers le bas"
