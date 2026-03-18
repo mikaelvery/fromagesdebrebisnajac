@@ -44,17 +44,15 @@ export default function GallerySection() {
   const trackRef    = useRef(null)
   const wrapRef     = useRef(null)
   const touchXM     = useRef(null)
-  const sliding     = useRef(false)   // animation en cours → bloquer nouveau drag
-  const cardW       = useRef(390)     // largeur de la carte = largeur du conteneur
+  const sliding     = useRef(false)
+  const cardW       = useRef(390)
 
-  // Positionne le track sans (ou avec) transition
   const setTrack = useCallback((px, animate = false) => {
     if (!trackRef.current) return
     trackRef.current.style.transition = animate ? 'transform 0.32s ease' : 'none'
     trackRef.current.style.transform  = `translateX(${px}px)`
   }, [])
 
-  // À chaque changement de current, on recentre silencieusement
   useEffect(() => {
     const w = wrapRef.current?.clientWidth || window.innerWidth
     cardW.current = w
@@ -70,7 +68,7 @@ export default function GallerySection() {
   const onMobileMove = (e) => {
     if (touchXM.current === null || sliding.current) return
     const dx = e.touches[0].clientX - touchXM.current
-    setTrack(-cardW.current + dx, false)   // suit le doigt en temps réel
+    setTrack(-cardW.current + dx, false)
   }
 
   const onMobileEnd = (e) => {
@@ -81,38 +79,71 @@ export default function GallerySection() {
     if (Math.abs(dx) > 45) {
       const dir = dx > 0 ? -1 : 1
       sliding.current = true
-      setTrack(-cardW.current + dir * -cardW.current, true)   // anime vers carte voisine
+      setTrack(-cardW.current + dir * -cardW.current, true)
       setTimeout(() => {
-        setCurrent(prev => mod(prev + dir, N))   // met à jour l'index
-        // Le useEffect recentrera le track sans transition
+        setCurrent(prev => mod(prev + dir, N))
         sliding.current = false
       }, 320)
     } else {
-      setTrack(-cardW.current, true)   // snap back
+      setTrack(-cardW.current, true)
     }
   }
 
   /* ══════════════════════════════════════════
-     DESKTOP — swipe simple (animation CSS)
+     DESKTOP — drag en temps réel (wrapper translateX)
   ══════════════════════════════════════════ */
-  const touchXD = useRef(null)
   const go = (dir) => setCurrent(i => mod(i + dir, N))
-  const onDesktopStart = (e) => { touchXD.current = e.touches[0].clientX }
-  const onDesktopEnd   = (e) => {
-    if (!touchXD.current) return
-    const dx = e.changedTouches[0].clientX - touchXD.current
-    touchXD.current = null
-    if (Math.abs(dx) > 40) go(dx > 0 ? -1 : 1)
+
+  const desktopWrapRef  = useRef(null)
+  const desktopDragX    = useRef(null)   // position X au début du drag
+  const desktopDragging = useRef(false)
+
+  // Déplace le wrapper desktop (toutes les cartes ensemble)
+  const setDesktopWrap = (px, animate = false) => {
+    if (!desktopWrapRef.current) return
+    desktopWrapRef.current.style.transition = animate ? 'transform 0.32s ease' : 'none'
+    desktopWrapRef.current.style.transform  = `translateX(${px}px)`
   }
 
-  /* ── Drag souris desktop ── */
-  const mouseXD = useRef(null)
-  const onDesktopMouseDown = (e) => { mouseXD.current = e.clientX }
-  const onDesktopMouseUp   = (e) => {
-    if (mouseXD.current === null) return
-    const dx = e.clientX - mouseXD.current
-    mouseXD.current = null
-    if (Math.abs(dx) > 40) go(dx > 0 ? -1 : 1)
+  // Remet le wrapper à 0 quand current change (après snap)
+  useEffect(() => {
+    setDesktopWrap(0, false)
+  }, [current])
+
+  const onDesktopDragStart = (e) => {
+    const x = e.touches ? e.touches[0].clientX : e.clientX
+    desktopDragX.current    = x
+    desktopDragging.current = true
+    setDesktopWrap(0, false)   // assure pas de transition pendant le drag
+  }
+
+  const onDesktopDragMove = (e) => {
+    if (!desktopDragging.current || desktopDragX.current === null) return
+    const x  = e.touches ? e.touches[0].clientX : e.clientX
+    const dx = x - desktopDragX.current
+    setDesktopWrap(dx, false)   // les cartes suivent le doigt/souris en live
+  }
+
+  const onDesktopDragEnd = (e) => {
+    if (!desktopDragging.current || desktopDragX.current === null) return
+    const x  = e.changedTouches ? e.changedTouches[0].clientX : e.clientX
+    const dx = x - desktopDragX.current
+    desktopDragX.current    = null
+    desktopDragging.current = false
+
+    if (Math.abs(dx) > 40) {
+      const dir = dx > 0 ? -1 : 1
+      // On remet à 0 immédiatement : les transitions CSS des cartes gèrent l'animation
+      setDesktopWrap(0, false)
+      go(dir)
+    } else {
+      // Snap back
+      setDesktopWrap(0, true)
+    }
+  }
+
+  const onDesktopLeave = (e) => {
+    if (desktopDragging.current) onDesktopDragEnd(e)
   }
 
   /* ── Style 3D pour desktop selon la position offset (-1, 0, +1) ── */
@@ -155,13 +186,12 @@ export default function GallerySection() {
         onTouchMove={onMobileMove}
         onTouchEnd={onMobileEnd}
       >
-        {/* Track : 3 cartes côte à côte, translateX positionne la centrale */}
         <div
           ref={trackRef}
           style={{
             display: 'flex',
             width: '300vw',
-            transform: 'translateX(-100vw)',   // valeur initiale SSR
+            transform: 'translateX(-100vw)',
             willChange: 'transform',
           }}
         >
@@ -185,7 +215,6 @@ export default function GallerySection() {
                   {photos[idx].label}
                 </span>
               </div>
-              {/* Reflet sur toutes les cartes → visible pendant le glissement */}
               <Reflection src={photos[idx].src} height="31vw" />
             </div>
           ))}
@@ -193,51 +222,64 @@ export default function GallerySection() {
       </div>
 
       {/* ════════════════════════════
-          DESKTOP : 3 images coverflow
+          DESKTOP : 3 images coverflow — drag en temps réel
       ════════════════════════════ */}
       <div
         className="hidden md:block relative"
         style={{ height: '38vw', maxHeight: 500, perspective: '1200px', perspectiveOrigin: '50% 40%' }}
-        onTouchStart={onDesktopStart}
-        onTouchEnd={onDesktopEnd}
-        onMouseDown={onDesktopMouseDown}
-        onMouseUp={onDesktopMouseUp}
-        onMouseLeave={() => { mouseXD.current = null }}
+        onTouchStart={onDesktopDragStart}
+        onTouchMove={onDesktopDragMove}
+        onTouchEnd={onDesktopDragEnd}
+        onMouseDown={onDesktopDragStart}
+        onMouseMove={onDesktopDragMove}
+        onMouseUp={onDesktopDragEnd}
+        onMouseLeave={onDesktopLeave}
       >
-        {[-1, 0, 1].map((offset) => {
-          const idx = mod(current + offset, N)
-          const isCenter = offset === 0
-          return (
-            <div
-              key={offset}
-              style={desktopStyle(offset)}
-              onClick={() => !isCenter && go(offset)}
-            >
+        {/* Wrapper qui se déplace avec le doigt/souris en temps réel */}
+        <div
+          ref={desktopWrapRef}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            transformStyle: 'preserve-3d',
+            willChange: 'transform',
+          }}
+        >
+          {[-1, 0, 1].map((offset) => {
+            const idx = mod(current + offset, N)
+            const isCenter = offset === 0
+            return (
               <div
-                className="relative w-full h-full overflow-hidden"
-                style={{ boxShadow: isCenter ? '0 20px 60px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.18)' }}
+                key={offset}
+                style={desktopStyle(offset)}
+                onClick={() => !isCenter && go(offset)}
               >
-                <Image
-                  src={photos[idx].src}
-                  alt={photos[idx].alt}
-                  fill
-                  draggable={false}
-                  sizes="(max-width: 1200px) 42vw, 560px"
-                  className="object-cover pointer-events-none"
-                />
-                {isCenter && (
-                  <>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
-                    <span className="absolute bottom-5 left-5 text-white font-serif text-xl drop-shadow-lg">
-                      {photos[idx].label}
-                    </span>
-                  </>
-                )}
+                <div
+                  className="relative w-full h-full overflow-hidden"
+                  style={{ boxShadow: isCenter ? '0 20px 60px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.18)' }}
+                >
+                  <Image
+                    src={photos[idx].src}
+                    alt={photos[idx].alt}
+                    fill
+                    draggable={false}
+                    sizes="(max-width: 1200px) 42vw, 560px"
+                    className="object-cover pointer-events-none"
+                  />
+                  {isCenter && (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+                      <span className="absolute bottom-5 left-5 text-white font-serif text-xl drop-shadow-lg">
+                        {photos[idx].label}
+                      </span>
+                    </>
+                  )}
+                </div>
+                {isCenter && <Reflection src={photos[idx].src} />}
               </div>
-              {isCenter && <Reflection src={photos[idx].src} />}
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
 
       {/* ════════════════════════════
