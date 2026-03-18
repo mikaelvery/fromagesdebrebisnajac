@@ -14,125 +14,144 @@ const photos = [
 
 const N = photos.length
 
-function normalizePos(raw) {
-  let p = raw % N
-  if (p > N / 2) p -= N
-  if (p < -N / 2) p += N
-  return p
-}
+// Dimensions fixes (mobile-first)
+const CW = 280   // largeur carte centrale
+const CH = 230   // hauteur carte centrale
+const SW = 110   // largeur cartes latérales
+const SH = 185   // hauteur cartes latérales
+const SIDE_OFFSET = 180  // pixels : distance entre centre central et centre latéral
+const REF_H = 65  // hauteur du reflet
+const REF_GAP = 4 // espace entre carte et reflet
 
 export default function GallerySection() {
   const [current, setCurrent] = useState(0)
-  const touchStartX = useRef(null)
-  const mouseStartX = useRef(null)
-  const dragging = useRef(false)
+  const touchX = useRef(null)
+  const stageH = CH + REF_GAP + REF_H
 
   const go = (dir) => setCurrent((i) => (i + dir + N) % N)
 
-  /* ── Touch ── */
-  const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX }
-  const onTouchEnd = (e) => {
-    if (touchStartX.current === null) return
-    const dx = e.changedTouches[0].clientX - touchStartX.current
-    if (Math.abs(dx) > 40) go(dx > 0 ? -1 : 1)
-    touchStartX.current = null
-  }
-
-  /* ── Mouse drag ── */
-  const onMouseDown = (e) => { mouseStartX.current = e.clientX; dragging.current = false }
-  const onMouseMove = (e) => { if (mouseStartX.current !== null) dragging.current = true }
-  const onMouseUp = (e) => {
-    if (mouseStartX.current === null) return
-    const dx = e.clientX - mouseStartX.current
-    if (Math.abs(dx) > 40) go(dx > 0 ? -1 : 1)
-    mouseStartX.current = null
+  const onTouchStart = (e) => { touchX.current = e.touches[0].clientX }
+  const onTouchEnd   = (e) => {
+    if (touchX.current === null) return
+    const dx = e.changedTouches[0].clientX - touchX.current
+    if (Math.abs(dx) > 35) go(dx > 0 ? -1 : 1)
+    touchX.current = null
   }
 
   return (
     <section className="py-20 bg-stone-50 overflow-hidden select-none">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto px-6 mb-12 text-center">
+
+      {/* Titre */}
+      <div className="text-center mb-10 px-6">
         <div className="text-amber-600 font-medium mb-3 uppercase tracking-wider text-sm">
           En images
         </div>
         <h2 className="text-4xl font-serif text-stone-900">La vie à la ferme</h2>
       </div>
 
-      {/* Viewport 3D */}
+      {/* Scène 3D — perspective posée ici */}
       <div
-        className="relative mx-auto cursor-grab active:cursor-grabbing"
-        style={{ perspective: '1100px', perspectiveOrigin: '50% 50%', height: 320 }}
+        className="relative mx-auto"
+        style={{
+          height: stageH,
+          perspective: '900px',
+          perspectiveOrigin: '50% 38%',
+        }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
       >
         {photos.map((photo, index) => {
-          const pos = normalizePos(index - current)
+          let pos = index - current
+          if (pos >  N / 2) pos -= N
+          if (pos < -N / 2) pos += N
           if (Math.abs(pos) > 1) return null
 
           const isCenter = pos === 0
+          const W = isCenter ? CW : SW
+          const H = isCenter ? CH : SH
 
-          /* ── styles 3D par position ── */
-          const rotateY  = pos * -48          // °  ex : +1 → -48°, -1 → +48°
-          const tx       = pos * 46           // %  offset horizontal
-          const scale    = isCenter ? 1 : 0.70
-          const opacity  = isCenter ? 1 : 0.62
-          const bright   = isCenter ? 1 : 0.55
-          const zIndex   = isCenter ? 10 : 5
-
-          /* largeur + hauteur carte */
-          const w = isCenter ? 420 : 240
-          const h = isCenter ? 300 : 220
+          // translateX en px (centré via -50%) + décalage latéral fixe
+          const txPx  = pos * SIDE_OFFSET
+          const rotY  = pos * -52
+          const topPx = isCenter ? 0 : Math.round((CH - SH) / 2)
 
           return (
             <div
               key={photo.src}
-              onClick={() => !dragging.current && !isCenter && go(pos > 0 ? 1 : -1)}
+              onClick={() => !isCenter && go(pos)}
               style={{
                 position: 'absolute',
                 left: '50%',
-                top: isCenter ? 10 : 30,
-                width: w,
-                height: h,
-                zIndex,
-                opacity,
-                filter: `brightness(${bright})`,
+                top: topPx,
+                width: W,
                 cursor: isCenter ? 'grab' : 'pointer',
-                transform: `translateX(calc(-50% + ${tx}%)) rotateY(${rotateY}deg) scale(${scale})`,
-                transition: 'all 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                /* Reflet uniquement sur la centrale */
-                WebkitBoxReflect: isCenter
-                  ? 'below 5px linear-gradient(transparent 55%, rgba(250,250,249,0.38) 100%)'
-                  : undefined,
+                zIndex: isCenter ? 10 : 5,
+                // Seul transform + opacity en transition → GPU, pas de layout
+                transform: `translateX(calc(-50% + ${txPx}px)) rotateY(${rotY}deg)`,
+                opacity: isCenter ? 1 : 0.58,
+                transition: 'transform 0.48s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.48s ease',
+                willChange: 'transform, opacity',
               }}
             >
-              <div className="relative w-full h-full overflow-hidden rounded-2xl shadow-2xl">
+              {/* ── Image principale ── */}
+              <div
+                className="relative overflow-hidden rounded-2xl shadow-2xl"
+                style={{ height: H }}
+              >
                 <Image
                   src={photo.src}
                   alt={photo.alt}
                   fill
                   draggable={false}
+                  priority={isCenter}
+                  sizes={isCenter ? '320px' : '130px'}
                   className="object-cover pointer-events-none"
-                  sizes="(max-width: 768px) 90vw, 600px"
                 />
                 {isCenter && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                )}
-                {isCenter && (
-                  <span className="absolute bottom-5 left-5 text-white font-serif text-xl drop-shadow-lg">
-                    {photo.label}
-                  </span>
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+                    <span className="absolute bottom-4 left-4 text-white font-serif text-lg drop-shadow-lg">
+                      {photo.label}
+                    </span>
+                  </>
                 )}
               </div>
+
+              {/* ── Reflet (centre uniquement) ── */}
+              {isCenter && (
+                <div
+                  style={{
+                    marginTop: REF_GAP,
+                    height: REF_H,
+                    width: W,
+                    overflow: 'hidden',
+                    borderRadius: '0 0 12px 12px',
+                    transform: 'scaleY(-1)',
+                    opacity: 0.42,
+                    WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
+                    maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
+                  }}
+                >
+                  <div className="relative" style={{ height: REF_H }}>
+                    <Image
+                      src={photo.src}
+                      alt=""
+                      fill
+                      draggable={false}
+                      sizes="320px"
+                      className="object-cover pointer-events-none"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )
         })}
       </div>
 
       {/* Dots */}
-      <div className="flex justify-center gap-2 mt-6">
+      <div className="flex justify-center gap-2 mt-5">
         {photos.map((_, i) => (
           <button
             key={i}
