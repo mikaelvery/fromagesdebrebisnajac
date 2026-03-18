@@ -78,12 +78,12 @@ export default function TeamSection() {
           <div className="text-amber-600 font-medium mb-3 uppercase tracking-wider text-sm">
             Qui sommes-nous ?
           </div>
-          <h2 className="text-5xl font-serif text-stone-900 mb-4">
+          <h2 className="text-3xl md:text-5xl font-serif text-stone-900 mb-4">
             Les têtes pensantes
             <br />
             <span className="text-amber-600">(et travaillantes)</span>
           </h2>
-          <p className="text-stone-500 text-lg max-w-lg mx-auto">
+          <p className="text-stone-500 text-base md:text-lg max-w-lg mx-auto">
             Un jeune couple dynamique et engagé — avec chacun ses super-pouvoirs.
           </p>
         </div>
