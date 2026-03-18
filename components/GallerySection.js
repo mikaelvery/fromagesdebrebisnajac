@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 
 const photos = [
@@ -13,36 +13,71 @@ const photos = [
 ]
 
 export default function GallerySection() {
-  const scrollRef = useRef(null)
+  const scrollRef  = useRef(null)
+  const cardRefs   = useRef([])
+  const rafRef     = useRef(null)
   const [current, setCurrent] = useState(0)
 
-  /* ── Détection de la carte active via IntersectionObserver ── */
+  /* ── Calcule et applique les transforms 3D sur chaque frame ── */
+  const updateTransforms = useCallback(() => {
+    const container = scrollRef.current
+    if (!container) return
+
+    const cw = container.clientWidth
+    const centerX = container.scrollLeft + cw / 2  // centre visible en px absolus
+    const maxDist  = cw * 0.72                     // distance de normalisation
+
+    let closestDist = Infinity
+    let closestIdx  = 0
+
+    cardRefs.current.forEach((card, i) => {
+      if (!card) return
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2
+      const dist       = cardCenter - centerX        // + = à droite du centre
+
+      if (Math.abs(dist) < closestDist) {
+        closestDist = Math.abs(dist)
+        closestIdx  = i
+      }
+
+      const ratio   = Math.max(-1, Math.min(1, dist / maxDist))
+      const rotateY = ratio * -42          // °  max 42° de rotation
+      const scale   = 1 - Math.abs(ratio) * 0.14
+      const opacity = 1 - Math.abs(ratio) * 0.4
+
+      // perspective() dans le transform = chaque carte a son propre point de fuite
+      card.style.transform = `perspective(900px) rotateY(${rotateY}deg) scale(${scale})`
+      card.style.opacity   = String(opacity)
+    })
+
+    setCurrent(closestIdx)
+  }, [])
+
+  /* ── Attache le listener scroll + RAF ── */
   useEffect(() => {
     const container = scrollRef.current
     if (!container) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
-            setCurrent(Number(entry.target.dataset.index))
-          }
-        })
-      },
-      { root: container, threshold: 0.55 }
-    )
+    const onScroll = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(updateTransforms)
+    }
 
-    const cards = container.querySelectorAll('[data-index]')
-    cards.forEach((c) => observer.observe(c))
-    return () => observer.disconnect()
-  }, [])
+    updateTransforms()                       // état initial
+    container.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      container.removeEventListener('scroll', onScroll)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [updateTransforms])
 
-  /* ── Scroll programmatique pour les dots ── */
+  /* ── Navigation par les dots ── */
   const goTo = (i) => {
     const container = scrollRef.current
-    if (!container) return
-    const card = container.querySelector(`[data-index="${i}"]`)
-    if (card) card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    const card = cardRefs.current[i]
+    if (!container || !card) return
+    const target = card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2
+    container.scrollTo({ left: target, behavior: 'smooth' })
   }
 
   return (
@@ -55,7 +90,7 @@ export default function GallerySection() {
         <h2 className="text-4xl font-serif text-stone-900">La vie à la ferme</h2>
       </div>
 
-      {/* ── Scroll natif snap ── */}
+      {/* ── Scroll natif ── */}
       <div
         ref={scrollRef}
         className="scroll-snap-x flex overflow-x-auto"
@@ -63,28 +98,27 @@ export default function GallerySection() {
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
           gap: 14,
-          /* Padding pour centrer la 1ère et dernière carte */
-          paddingLeft: 'calc((100% - 68vw) / 2)',
-          paddingRight: 'calc((100% - 68vw) / 2)',
-          /* Espace sous pour le reflet */
+          paddingLeft:   'calc((100% - min(68vw, 460px)) / 2)',
+          paddingRight:  'calc((100% - min(68vw, 460px)) / 2)',
           paddingBottom: 80,
         }}
       >
         {photos.map((photo, i) => (
           <div
             key={photo.src}
-            data-index={i}
+            ref={(el) => { cardRefs.current[i] = el }}
             style={{
               flexShrink: 0,
-              width: '68vw',
-              maxWidth: 460,
+              width: 'min(68vw, 460px)',
               scrollSnapAlign: 'center',
+              willChange: 'transform, opacity',
+              /* Pas de transition CSS : le JS met à jour chaque frame */
             }}
           >
-            {/* ── Image principale ── */}
+            {/* ── Image ── */}
             <div
               className="relative overflow-hidden rounded-2xl shadow-xl"
-              style={{ height: '44vw', maxHeight: 300 }}
+              style={{ height: 'min(44vw, 300px)' }}
             >
               <Image
                 src={photo.src}
@@ -104,7 +138,7 @@ export default function GallerySection() {
             <div
               style={{
                 marginTop: 5,
-                height: 70,
+                height: 68,
                 overflow: 'hidden',
                 transform: 'scaleY(-1)',
                 opacity: 0.38,
@@ -112,7 +146,7 @@ export default function GallerySection() {
                 maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
               }}
             >
-              <div className="relative" style={{ height: 70 }}>
+              <div style={{ position: 'relative', height: 68 }}>
                 <Image
                   src={photo.src}
                   alt=""
