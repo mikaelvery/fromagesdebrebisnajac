@@ -105,22 +105,31 @@ export default function GallerySection() {
     if (Math.abs(dx) > 40) go(dx > 0 ? -1 : 1)
   }
 
+  /* ── Drag souris desktop ── */
+  const mouseXD = useRef(null)
+  const onDesktopMouseDown = (e) => { mouseXD.current = e.clientX }
+  const onDesktopMouseUp   = (e) => {
+    if (mouseXD.current === null) return
+    const dx = e.clientX - mouseXD.current
+    mouseXD.current = null
+    if (Math.abs(dx) > 40) go(dx > 0 ? -1 : 1)
+  }
+
   /* ── Style 3D pour desktop selon la position offset (-1, 0, +1) ── */
   const desktopStyle = (offset) => {
     const isCenter = offset === 0
     return {
       position: 'absolute',
       left: '50%',
-      top: isCenter ? 0 : '5%',
-      /* Carte centrale grande, côtés plus petits */
-      width:  isCenter ? '42vw' : '27vw',
-      height: isCenter ? '30vw' : '22vw',
-      maxWidth:  isCenter ? 560 : 360,
-      maxHeight: isCenter ? 400 : 300,
-      transform: `translateX(calc(-50% + ${offset * 33}vw)) rotateY(${offset * -42}deg) scale(${isCenter ? 1 : 0.9})`,
-      opacity:   isCenter ? 1 : 0.72,
+      top: isCenter ? 0 : '6%',
+      width:     isCenter ? '48vw' : '26vw',
+      height:    isCenter ? '34vw' : '24vw',
+      maxWidth:  isCenter ? 680 : 380,
+      maxHeight: isCenter ? 460 : 320,
+      transform: `translateX(calc(-50% + ${offset * 35}vw)) rotateY(${offset * -44}deg) scale(${isCenter ? 1 : 0.88})`,
+      opacity:   isCenter ? 1 : 0.70,
       zIndex:    isCenter ? 10 : 5,
-      cursor:    isCenter ? 'default' : 'pointer',
+      cursor:    isCenter ? 'grab' : 'pointer',
       transition: 'transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.5s ease',
     }
   }
@@ -191,6 +200,9 @@ export default function GallerySection() {
         style={{ height: '38vw', maxHeight: 500, perspective: '1200px', perspectiveOrigin: '50% 40%' }}
         onTouchStart={onDesktopStart}
         onTouchEnd={onDesktopEnd}
+        onMouseDown={onDesktopMouseDown}
+        onMouseUp={onDesktopMouseUp}
+        onMouseLeave={() => { mouseXD.current = null }}
       >
         {[-1, 0, 1].map((offset) => {
           const idx = mod(current + offset, N)

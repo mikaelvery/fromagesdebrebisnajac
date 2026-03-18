@@ -209,27 +209,27 @@ export default function ProductsSection() {
             onClick={(e) => e.stopPropagation()}
             style={{ borderRadius: '2px' }}
           >
-            {/* Header minimaliste et élégant */}
-            <div className="relative bg-stone-900 text-white px-8 py-12">
+            {/* Header compact sur mobile */}
+            <div className="relative bg-stone-900 text-white px-5 py-4 md:px-8 md:py-10">
               {/* Pattern subtil */}
               <div className="absolute inset-0 opacity-5 dot-pattern"></div>
-              
+
               <div className="relative z-10">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center hover:bg-white/10 transition-colors rounded-full"
+                  className="absolute top-3 right-4 md:top-6 md:right-6 w-9 h-9 flex items-center justify-center hover:bg-white/10 transition-colors rounded-full"
                 >
-                  <X size={20} strokeWidth={1.5} />
+                  <X size={18} strokeWidth={1.5} />
                 </button>
 
-                <div className="max-w-3xl">
-                  <div className="inline-block px-4 py-1.5 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-300 text-xs font-medium mb-4 uppercase tracking-wider">
+                <div className="max-w-3xl pr-10">
+                  <div className="hidden md:inline-block px-4 py-1.5 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-300 text-xs font-medium mb-3 uppercase tracking-wider">
                     Produits Fermiers Bio
                   </div>
-                  <h3 className="text-4xl md:text-5xl font-serif mb-3">
+                  <h3 className="text-xl md:text-4xl font-serif leading-tight mb-1 md:mb-3">
                     {selectedCategory.title}
                   </h3>
-                  <p className="text-stone-300 text-lg">
+                  <p className="hidden md:block text-stone-300 text-base">
                     {selectedCategory.description}
                   </p>
                 </div>
@@ -238,8 +238,8 @@ export default function ProductsSection() {
 
             {/* Contenu scrollable */}
             <div className="flex-1 overflow-y-auto bg-stone-50">
-              <div className="p-8 md:p-12">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="p-3 md:p-8 lg:p-12">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                   {selectedCategory.products.map((product, index) => (
                     <div
                       key={index}
@@ -247,7 +247,7 @@ export default function ProductsSection() {
                     >
                       {/* Image du produit */}
                       {product.image ? (
-                        <div className="relative w-full h-56 overflow-hidden bg-stone-100">
+                        <div className="relative w-full h-32 md:h-48 overflow-hidden bg-stone-100">
                           <Image
                             src={product.image}
                             alt={product.name}
@@ -256,20 +256,20 @@ export default function ProductsSection() {
                           />
                         </div>
                       ) : (
-                        <div className="w-full h-56 bg-linear-to-br from-stone-200 to-amber-100 flex items-center justify-center">
-                          <span className="text-6xl opacity-40">{selectedCategory.icon}</span>
+                        <div className="w-full h-24 md:h-48 bg-linear-to-br from-stone-200 to-amber-100 flex items-center justify-center">
+                          <span className="text-4xl md:text-6xl opacity-40">{selectedCategory.icon}</span>
                         </div>
                       )}
 
                       {/* Info produit */}
-                      <div className="p-6">
-                        <h4 className="text-xl font-serif text-stone-900 mb-2">
+                      <div className="p-3 md:p-6">
+                        <h4 className="text-base md:text-xl font-serif text-stone-900 mb-1 md:mb-2">
                           {product.name}
                         </h4>
-                        <p className="text-amber-600 text-sm font-medium mb-3 uppercase tracking-wide">
+                        <p className="text-amber-600 text-xs md:text-sm font-medium mb-1 md:mb-3 uppercase tracking-wide">
                           {product.description}
                         </p>
-                        <p className="text-stone-600 text-sm leading-relaxed">
+                        <p className="hidden md:block text-stone-600 text-sm leading-relaxed">
                           {product.details}
                         </p>
                       </div>
