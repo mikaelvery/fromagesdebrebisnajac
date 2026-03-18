@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
+import { flushSync } from 'react-dom'
 import Image from 'next/image'
 
 const photos = [
@@ -68,7 +69,14 @@ export default function GallerySection() {
       const dir = dx > 0 ? -1 : 1
       sliding.current = true
       setTrack(-cardW.current - dir * cardW.current, true)
-      setTimeout(() => { setCurrent(i => mod(i + dir, N)); sliding.current = false }, 320)
+      setTimeout(() => {
+        // 1. Coupe la transition
+        if (trackRef.current) trackRef.current.style.transition = 'none'
+        // 2. Met à jour les images ET recentre le track de façon synchrone → zéro flash
+        flushSync(() => setCurrent(i => mod(i + dir, N)))
+        setTrack(-cardW.current, false)
+        sliding.current = false
+      }, 320)
     } else {
       setTrack(-cardW.current, true)
     }
