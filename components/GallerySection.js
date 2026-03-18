@@ -15,19 +15,19 @@ const photos = [
 const N = photos.length
 const mod = (n, m) => ((n % m) + m) % m
 
-function Reflection({ src }) {
+function Reflection({ src, height = 70 }) {
   return (
     <div
       style={{
-        height: 70,
+        height,
         overflow: 'hidden',
         transform: 'scaleY(-1)',
-        opacity: 0.38,
+        opacity: 0.4,
         WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
         maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
       }}
     >
-      <div style={{ position: 'relative', height: 70 }}>
+      <div style={{ position: 'relative', height }}>
         <Image src={src} alt="" fill draggable={false}
           sizes="600px" className="object-cover pointer-events-none" aria-hidden="true" />
       </div>
@@ -176,7 +176,8 @@ export default function GallerySection() {
                   {photos[idx].label}
                 </span>
               </div>
-              {pos === 1 && <Reflection src={photos[idx].src} />}
+              {/* Reflet sur toutes les cartes → visible pendant le glissement */}
+              <Reflection src={photos[idx].src} height="31vw" />
             </div>
           ))}
         </div>
