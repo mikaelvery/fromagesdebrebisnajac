@@ -14,26 +14,29 @@ const photos = [
 
 export default function GallerySection() {
   const scrollRef  = useRef(null)
-  const cardRefs   = useRef([])
+  // outerRefs = éléments de layout (scroll snap) — pour calculer la position
+  // innerRefs = éléments visuels — reçoivent le transform 3D
+  const outerRefs  = useRef([])
+  const innerRefs  = useRef([])
   const rafRef     = useRef(null)
   const [current, setCurrent] = useState(0)
 
-  /* ── Calcule et applique les transforms 3D sur chaque frame ── */
   const updateTransforms = useCallback(() => {
     const container = scrollRef.current
     if (!container) return
 
-    const cw = container.clientWidth
-    const centerX = container.scrollLeft + cw / 2  // centre visible en px absolus
-    const maxDist  = cw * 0.72                     // distance de normalisation
+    const cw      = container.clientWidth
+    const centerX = container.scrollLeft + cw / 2
+    const maxDist = cw * 0.68
 
     let closestDist = Infinity
     let closestIdx  = 0
 
-    cardRefs.current.forEach((card, i) => {
-      if (!card) return
-      const cardCenter = card.offsetLeft + card.offsetWidth / 2
-      const dist       = cardCenter - centerX        // + = à droite du centre
+    outerRefs.current.forEach((outer, i) => {
+      if (!outer || !innerRefs.current[i]) return
+
+      const cardCenter = outer.offsetLeft + outer.offsetWidth / 2
+      const dist       = cardCenter - centerX
 
       if (Math.abs(dist) < closestDist) {
         closestDist = Math.abs(dist)
@@ -41,19 +44,19 @@ export default function GallerySection() {
       }
 
       const ratio   = Math.max(-1, Math.min(1, dist / maxDist))
-      const rotateY = ratio * -42          // °  plus d'angle comme chezestela
+      const rotateY = ratio * -42
       const scale   = 1 - Math.abs(ratio) * 0.12
       const opacity = 1 - Math.abs(ratio) * 0.30
 
-      // perspective() dans le transform = chaque carte a son propre point de fuite
-      card.style.transform = `perspective(900px) rotateY(${rotateY}deg) scale(${scale})`
-      card.style.opacity   = String(opacity)
+      // Le transform va sur l'INNER — le layout de l'outer n'est pas affecté
+      innerRefs.current[i].style.transform =
+        `perspective(900px) rotateY(${rotateY}deg) scale(${scale})`
+      innerRefs.current[i].style.opacity = String(opacity)
     })
 
     setCurrent(closestIdx)
   }, [])
 
-  /* ── Attache le listener scroll + RAF ── */
   useEffect(() => {
     const container = scrollRef.current
     if (!container) return
@@ -63,7 +66,7 @@ export default function GallerySection() {
       rafRef.current = requestAnimationFrame(updateTransforms)
     }
 
-    updateTransforms()                       // état initial
+    updateTransforms()
     container.addEventListener('scroll', onScroll, { passive: true })
     return () => {
       container.removeEventListener('scroll', onScroll)
@@ -71,18 +74,16 @@ export default function GallerySection() {
     }
   }, [updateTransforms])
 
-  /* ── Navigation par les dots ── */
   const goTo = (i) => {
     const container = scrollRef.current
-    const card = cardRefs.current[i]
-    if (!container || !card) return
-    const target = card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2
+    const outer = outerRefs.current[i]
+    if (!container || !outer) return
+    const target = outer.offsetLeft - (container.clientWidth - outer.offsetWidth) / 2
     container.scrollTo({ left: target, behavior: 'smooth' })
   }
 
   return (
     <section className="py-20 bg-stone-50">
-      {/* Titre */}
       <div className="text-center mb-10 px-6">
         <div className="text-amber-600 font-medium mb-3 uppercase tracking-wider text-sm">
           En images
@@ -90,7 +91,7 @@ export default function GallerySection() {
         <h2 className="text-4xl font-serif text-stone-900">La vie à la ferme</h2>
       </div>
 
-      {/* ── Scroll natif ── */}
+      {/* Scroll natif — outer divs gèrent le layout, inner divs gèrent le 3D */}
       <div
         ref={scrollRef}
         className="scroll-snap-x flex overflow-x-auto"
@@ -98,75 +99,79 @@ export default function GallerySection() {
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
           gap: 12,
-          /* Carte à 58vw → ~22% visible de chaque côté sur mobile */
-          paddingLeft:   'calc((100% - min(58vw, 420px)) / 2)',
-          paddingRight:  'calc((100% - min(58vw, 420px)) / 2)',
+          paddingLeft:   'calc((100vw - min(62vw, 420px)) / 2)',
+          paddingRight:  'calc((100vw - min(62vw, 420px)) / 2)',
           paddingBottom: 80,
         }}
       >
         {photos.map((photo, i) => (
+          /* ── Outer : layout + snap — PAS de transform ── */
           <div
             key={photo.src}
-            ref={(el) => { cardRefs.current[i] = el }}
+            ref={(el) => { outerRefs.current[i] = el }}
             style={{
               flexShrink: 0,
-              width: 'min(58vw, 420px)',
+              width: 'min(62vw, 420px)',
               scrollSnapAlign: 'center',
-              scrollSnapStop: 'always',   // 1 swipe = 1 image max
-              willChange: 'transform, opacity',
+              scrollSnapStop: 'always',
             }}
           >
-            {/* ── Image — coins carrés, ombre carrée ── */}
+            {/* ── Inner : reçoit le transform 3D ── */}
             <div
-              className="relative overflow-hidden"
-              style={{
-                height: 'min(38vw, 270px)',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.22)',
-              }}
+              ref={(el) => { innerRefs.current[i] = el }}
+              style={{ willChange: 'transform, opacity' }}
             >
-              <Image
-                src={photo.src}
-                alt={photo.alt}
-                fill
-                draggable={false}
-                sizes="(max-width: 768px) 58vw, 420px"
-                className="object-cover pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
-              <span className="absolute bottom-4 left-4 text-white font-serif text-base drop-shadow">
-                {photo.label}
-              </span>
-            </div>
-
-            {/* ── Reflet collé (marginTop: 0) ── */}
-            <div
-              style={{
-                marginTop: 0,
-                height: 68,
-                overflow: 'hidden',
-                transform: 'scaleY(-1)',
-                opacity: 0.38,
-                WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
-                maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
-              }}
-            >
-              <div style={{ position: 'relative', height: 68 }}>
+              {/* Image */}
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  height: 'min(40vw, 280px)',
+                  boxShadow: '0 8px 28px rgba(0,0,0,0.22)',
+                }}
+              >
                 <Image
                   src={photo.src}
-                  alt=""
+                  alt={photo.alt}
                   fill
                   draggable={false}
-                  sizes="420px"
+                  sizes="(max-width: 768px) 62vw, 420px"
                   className="object-cover pointer-events-none"
-                  aria-hidden="true"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+                <span className="absolute bottom-4 left-4 text-white font-serif text-base drop-shadow">
+                  {photo.label}
+                </span>
+              </div>
+
+              {/* Reflet collé */}
+              <div
+                style={{
+                  height: 70,
+                  overflow: 'hidden',
+                  transform: 'scaleY(-1)',
+                  opacity: 0.38,
+                  WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
+                  maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
+                }}
+              >
+                <div style={{ position: 'relative', height: 70 }}>
+                  <Image
+                    src={photo.src}
+                    alt=""
+                    fill
+                    draggable={false}
+                    sizes="420px"
+                    className="object-cover pointer-events-none"
+                    aria-hidden="true"
+                  />
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ── Dots ── */}
+      {/* Dots */}
       <div className="flex justify-center gap-2 -mt-2">
         {photos.map((_, i) => (
           <button
