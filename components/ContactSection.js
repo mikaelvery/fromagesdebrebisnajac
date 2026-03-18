@@ -1,6 +1,21 @@
+'use client'
+
+import { useState } from 'react'
 import { MapPin, Phone, Mail, Calendar } from 'lucide-react'
 
 export default function ContactSection() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+  const [sent, setSent] = useState(false)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const subject = encodeURIComponent(`Message de ${formData.name} via le site`)
+    const body = encodeURIComponent(`Bonjour,\n\n${formData.message}\n\n---\nNom : ${formData.name}\nEmail : ${formData.email}`)
+    window.location.href = `mailto:lafermedutreil@gmail.com?subject=${subject}&body=${body}`
+    setSent(true)
+  }
+
+
   const markets = [
     {
       icon: <MapPin size={24} />,
@@ -114,25 +129,64 @@ export default function ContactSection() {
               </div>
             </div>
 
-            <div className="bg-stone-800 rounded-2xl p-8">
-              <h4 className="text-2xl font-serif mb-6">Horaires d&apos;ouverture</h4>
-              <div className="space-y-4 text-stone-300">
-                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-stone-700 pb-3">
-                  <span>Lundi - Samedi</span>
-                  <span className="text-amber-400 font-medium">17h - 19h</span>
+            <div className="bg-stone-800 rounded-2xl p-8 flex flex-col">
+              <h4 className="text-2xl font-serif mb-6">Envoyez-nous un message</h4>
+              {sent ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-8">
+                  <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-stone-300 text-lg font-serif">Merci pour votre message !</p>
+                  <p className="text-stone-400 text-sm">Votre client mail va s&apos;ouvrir pour finaliser l&apos;envoi.</p>
+                  <button onClick={() => setSent(false)} className="text-amber-400 text-sm underline underline-offset-2 mt-2">
+                    Envoyer un autre message
+                  </button>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-stone-700 pb-3">
-                  <span>Dimanche</span>
-                  <span className="text-amber-400 font-medium">Marché de Najac</span>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-stone-700 pb-3">
-                  <span>Jeudi</span>
-                  <span className="text-amber-400 font-medium">Marché Villefranche</span>
-                </div>
-              </div>
-              <p className="text-stone-400 text-sm mt-6 italic">
-                * Vente à la ferme possible sur rendez-vous en dehors de ces horaires
-              </p>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1">
+                  <div>
+                    <label className="block text-stone-400 text-xs uppercase tracking-wider mb-1.5">Votre nom</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-stone-700/60 border border-stone-600 focus:border-amber-500 text-white placeholder-stone-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                      placeholder="Prénom et nom"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-stone-400 text-xs uppercase tracking-wider mb-1.5">Votre email</label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-stone-700/60 border border-stone-600 focus:border-amber-500 text-white placeholder-stone-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                      placeholder="votre@email.fr"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-stone-400 text-xs uppercase tracking-wider mb-1.5">Votre message</label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full bg-stone-700/60 border border-stone-600 focus:border-amber-500 text-white placeholder-stone-500 rounded-xl px-4 py-3 text-sm outline-none transition-colors resize-none"
+                      placeholder="Renseignements, commande, réservation gîte..."
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="mt-2 w-full bg-amber-500 hover:bg-amber-400 text-stone-900 font-semibold rounded-xl py-3 text-sm transition-colors"
+                  >
+                    Envoyer le message
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>

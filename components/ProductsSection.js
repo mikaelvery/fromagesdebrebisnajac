@@ -13,6 +13,7 @@ export default function ProductsSection() {
       icon: '🧀',
       title: 'Fromages de Brebis',
       description: 'Nos fromages fermiers au lait cru entier de brebis, affinés avec soin',
+      previewImages: ['/images/produits/tomme-de-brebis.jpg', '/images/produits/brebicous.jpg', '/images/produits/rompi.jpg'],
       products: [
         {
           name: 'Tome de Brebis',
@@ -45,6 +46,7 @@ export default function ProductsSection() {
       icon: '🥛',
       title: 'Yaourts & Produits Frais',
       description: 'Yaourts et produits laitiers frais au lait entier de brebis',
+      previewImages: [],
       products: [
         {
           name: 'Yaourts Nature',
@@ -89,6 +91,7 @@ export default function ProductsSection() {
       icon: '✨',
       title: 'Nos Spécialités',
       description: 'Découvrez nos créations artisanales et produits de saison',
+      previewImages: [],
       products: [
         {
           name: 'Fromages Affinés',
@@ -131,32 +134,63 @@ export default function ProductsSection() {
               <div
                 key={index}
                 onClick={() => setSelectedCategory(category)}
-                className="card-hover bg-white rounded-2xl p-8 shadow-lg cursor-pointer group"
+                className="card-hover bg-white rounded-2xl shadow-lg cursor-pointer group overflow-hidden"
               >
-                <div className="w-16 h-16 bg-linear-to-br from-amber-500 to-amber-600 rounded-2xl mb-6 flex items-center justify-center text-white text-2xl transform group-hover:scale-110 transition-transform">
-                  {category.icon}
-                </div>
-                <h3 className="text-2xl font-serif text-stone-900 mb-4">
-                  {category.title}
-                </h3>
-                <p className="text-stone-600 mb-6 leading-relaxed">
-                  {category.description}
-                </p>
-                <div className="flex items-center text-amber-600 font-medium">
-                  Découvrir ({category.products.length} produits)
-                  <svg
-                    className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
+                {/* Photo preview en haut de la carte */}
+                {category.previewImages && category.previewImages.length > 0 ? (
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={category.previewImages[0]}
+                      alt={category.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                  </svg>
+                    <div className="absolute inset-0 bg-linear-to-t from-stone-900/40 to-transparent"></div>
+                    {/* Miniatures supplémentaires */}
+                    {category.previewImages.length > 1 && (
+                      <div className="absolute bottom-2 right-2 flex gap-1">
+                        {category.previewImages.slice(1).map((img, i) => (
+                          <div key={i} className="relative w-10 h-10 rounded-lg overflow-hidden border-2 border-white/60">
+                            <Image src={img} alt="" fill className="object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="h-48 bg-linear-to-br from-amber-50 to-stone-100 flex items-center justify-center">
+                    <span className="text-6xl opacity-40">{category.icon}</span>
+                  </div>
+                )}
+
+                <div className="p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-linear-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center text-white text-lg transform group-hover:scale-110 transition-transform">
+                      {category.icon}
+                    </div>
+                    <h3 className="text-xl font-serif text-stone-900">
+                      {category.title}
+                    </h3>
+                  </div>
+                  <p className="text-stone-600 mb-6 leading-relaxed text-sm">
+                    {category.description}
+                  </p>
+                  <div className="flex items-center text-amber-600 font-medium text-sm">
+                    Découvrir ({category.products.length} produits)
+                    <svg
+                      className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
                 </div>
               </div>
             ))}
