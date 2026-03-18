@@ -9,6 +9,34 @@ const photos = [
   { src: '/images/brebichons.jpg', alt: 'Les Brebichons - petits fromages de brebis', label: 'Brebichons' },
 ]
 
+function ReflectedPhoto({ src, alt, label, className, imageClassName }) {
+  return (
+    <div className={`relative group ${className}`}>
+      {/* Image principale */}
+      <div
+        className={`relative overflow-hidden rounded-2xl shadow-lg group-hover:shadow-2xl transition-shadow duration-500 ${imageClassName}`}
+        style={{
+          WebkitBoxReflect:
+            'below 6px linear-gradient(transparent 60%, rgba(255,255,255,0.18) 100%)',
+        }}
+      >
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        {/* Overlay hover */}
+        <div className="absolute inset-0 bg-linear-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Label hover */}
+        <div className="absolute bottom-4 left-4 text-white font-serif text-base opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {label}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function GallerySection() {
   return (
     <section className="py-20 bg-stone-50 overflow-hidden">
@@ -23,40 +51,38 @@ export default function GallerySection() {
         </div>
       </div>
 
-      {/* Grille photo asymétrique */}
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {/* Grande photo en vedette */}
-          <div className="col-span-2 md:col-span-1 md:row-span-2 relative group overflow-hidden rounded-2xl h-64 md:h-auto md:min-h-[480px]">
-            <Image
-              src={photos[0].src}
-              alt={photos[0].alt}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-700"
+        {/* Ligne 1 : grande photo + 2 petites */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-5">
+          {/* Grande photo vedette */}
+          <ReflectedPhoto
+            src={photos[0].src}
+            alt={photos[0].alt}
+            label={photos[0].label}
+            className="col-span-2 md:col-span-1 md:row-span-2"
+            imageClassName="h-64 md:h-[480px]"
+          />
+          {/* Photo 2 et 3 */}
+          {photos.slice(1, 3).map((photo) => (
+            <ReflectedPhoto
+              key={photo.src}
+              src={photo.src}
+              alt={photo.alt}
+              label={photo.label}
+              className=""
+              imageClassName="h-56"
             />
-            <div className="absolute inset-0 bg-linear-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute bottom-4 left-4 text-white font-serif text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              {photos[0].label}
-            </div>
-          </div>
-
-          {/* Photos secondaires */}
-          {photos.slice(1).map((photo, index) => (
-            <div
-              key={index}
-              className="relative group overflow-hidden rounded-2xl h-56"
-            >
-              <Image
-                src={photo.src}
-                alt={photo.alt}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="absolute bottom-3 left-3 text-white font-serif text-base opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                {photo.label}
-              </div>
-            </div>
+          ))}
+          {/* Photos 4, 5, 6 */}
+          {photos.slice(3).map((photo) => (
+            <ReflectedPhoto
+              key={photo.src}
+              src={photo.src}
+              alt={photo.alt}
+              label={photo.label}
+              className=""
+              imageClassName="h-56"
+            />
           ))}
         </div>
       </div>

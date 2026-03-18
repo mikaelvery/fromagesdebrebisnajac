@@ -89,9 +89,9 @@ export default function Hero() {
         {/* Stats cards */}
         <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-6 md:mb-12">
           {[
-            { value: '60', label: 'Brebis', icon: '🐑' },
+            { value: '80', label: 'Brebis', icon: '🐑' },
             { value: '10ha', label: 'Bio', icon: '🌿' },
-            { value: '100%', label: 'Artisanal', icon: '🧀' }
+            { value: '100%', label: 'Fermier', icon: '🧀' }
           ].map((stat, index) => (
             <div
               key={index}
