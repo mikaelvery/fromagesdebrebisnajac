@@ -1,30 +1,5 @@
 import Image from 'next/image'
 
-function EcocertBadge() {
-  return (
-    <div
-      className="inline-flex flex-col items-center justify-center px-5 py-3 rounded-full border-[3px] select-none"
-      style={{
-        borderColor: '#c0392b',
-        background: 'white',
-        minWidth: 80,
-      }}
-    >
-      <span
-        className="font-black text-base leading-none tracking-widest"
-        style={{ color: '#c0392b' }}
-      >
-        ECO
-      </span>
-      <span
-        className="font-black text-base leading-none tracking-widest"
-        style={{ color: '#c0392b' }}
-      >
-        CERT
-      </span>
-    </div>
-  )
-}
 
 export default function AboutSection() {
   return (
@@ -97,19 +72,6 @@ export default function AboutSection() {
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              {/* Badge brebis */}
-              <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2 shadow-lg">
-                <span className="text-xl">🐑</span>
-                <div>
-                  <div className="text-stone-900 font-semibold text-sm">80 brebis laitières</div>
-                  <div className="text-stone-500 text-xs">Agriculture Biologique</div>
-                </div>
-              </div>
-
-              {/* Badge ECOCERT */}
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-2xl p-2 shadow-lg">
-                <EcocertBadge />
-              </div>
             </div>
           </div>
         </div>
