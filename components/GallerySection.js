@@ -41,9 +41,9 @@ export default function GallerySection() {
       }
 
       const ratio   = Math.max(-1, Math.min(1, dist / maxDist))
-      const rotateY = ratio * -42          // °  max 42° de rotation
-      const scale   = 1 - Math.abs(ratio) * 0.14
-      const opacity = 1 - Math.abs(ratio) * 0.4
+      const rotateY = ratio * -28          // °  max 28° (visible et pas trop fin)
+      const scale   = 1 - Math.abs(ratio) * 0.10
+      const opacity = 1 - Math.abs(ratio) * 0.25  // côtés bien visibles
 
       // perspective() dans le transform = chaque carte a son propre point de fuite
       card.style.transform = `perspective(900px) rotateY(${rotateY}deg) scale(${scale})`
@@ -97,9 +97,10 @@ export default function GallerySection() {
         style={{
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
-          gap: 14,
-          paddingLeft:   'calc((100% - min(68vw, 460px)) / 2)',
-          paddingRight:  'calc((100% - min(68vw, 460px)) / 2)',
+          gap: 12,
+          /* Carte à 58vw → ~22% visible de chaque côté sur mobile */
+          paddingLeft:   'calc((100% - min(58vw, 420px)) / 2)',
+          paddingRight:  'calc((100% - min(58vw, 420px)) / 2)',
           paddingBottom: 80,
         }}
       >
@@ -109,16 +110,15 @@ export default function GallerySection() {
             ref={(el) => { cardRefs.current[i] = el }}
             style={{
               flexShrink: 0,
-              width: 'min(68vw, 460px)',
+              width: 'min(58vw, 420px)',
               scrollSnapAlign: 'center',
               willChange: 'transform, opacity',
-              /* Pas de transition CSS : le JS met à jour chaque frame */
             }}
           >
             {/* ── Image ── */}
             <div
               className="relative overflow-hidden rounded-2xl shadow-xl"
-              style={{ height: 'min(44vw, 300px)' }}
+              style={{ height: 'min(38vw, 270px)' }}
             >
               <Image
                 src={photo.src}
