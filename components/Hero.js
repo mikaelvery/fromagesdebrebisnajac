@@ -28,10 +28,10 @@ export default function Hero() {
         />
 
         {/* Overlay vert émeraude principal */}
-        <div className="absolute inset-0 bg-emerald-900/75"></div>
-        
+        <div className="absolute inset-0 bg-emerald-900/55"></div>
+
         {/* Gradient vert émeraude - de bas en haut */}
-        <div className="absolute inset-0 bg-linear-to-t from-emerald-950 via-emerald-900/60 to-emerald-800/40"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-emerald-950/90 via-emerald-900/40 to-emerald-800/20"></div>
 
         {/* Pattern de points blancs */}
         <div

@@ -49,15 +49,26 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div className="relative h-96 group">
+          <div className="relative h-[480px] group">
             {/* Bordure décorative animée */}
-            <div className="absolute inset-0 bg-linear-to-br from-amber-200 to-emerald-300 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-500"></div>
-            
-            {/* Placeholder en attendant la photo */}
-            <div className="absolute inset-2 bg-linear-to-tr  from-stone-700 to-stone-500 rounded-3xl flex flex-col items-center justify-center text-white text-center p-8 group-hover:from-stone-800 group-hover:to-stone-600 transition-all duration-500">
-              <div className="text-6xl mb-4">📸</div>
-              <p className="text-2xl font-serif mb-2">Paysage de la ferme</p>
-              <p className="text-lg opacity-90">& Troupeau de brebis</p>
+            <div className="absolute inset-0 bg-linear-to-br from-amber-200 to-emerald-300 rounded-3xl transform rotate-3 group-hover:rotate-2 transition-transform duration-500"></div>
+
+            {/* Photo de la ferme */}
+            <div className="absolute inset-2 rounded-3xl overflow-hidden shadow-2xl">
+              <Image
+                src="/images/ferme-1.jpg"
+                alt="La Ferme du Treil - troupeau de brebis en Aveyron"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              {/* Badge superposé */}
+              <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2 shadow-lg">
+                <span className="text-xl">🐑</span>
+                <div>
+                  <div className="text-stone-900 font-semibold text-sm">60 brebis laitières</div>
+                  <div className="text-stone-500 text-xs">Agriculture Biologique</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
