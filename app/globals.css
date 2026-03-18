@@ -55,3 +55,12 @@ nav, button, .no-select {
 main, article, p, h1, h2, h3, h4, h5, h6 {
   user-select: text;
 }
+
+/* Scroll natif sans scrollbar visible */
+.scroll-snap-x {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-snap-x::-webkit-scrollbar {
+  display: none;
+}

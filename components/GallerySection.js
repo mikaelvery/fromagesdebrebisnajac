@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 
 const photos = [
@@ -12,35 +12,41 @@ const photos = [
   { src: '/images/brebichons.jpg', alt: 'Les Brebichons', label: 'Brebichons' },
 ]
 
-const N = photos.length
-
-// Dimensions fixes (mobile-first)
-const CW = 280   // largeur carte centrale
-const CH = 230   // hauteur carte centrale
-const SW = 110   // largeur cartes latérales
-const SH = 185   // hauteur cartes latérales
-const SIDE_OFFSET = 180  // pixels : distance entre centre central et centre latéral
-const REF_H = 65  // hauteur du reflet
-const REF_GAP = 4 // espace entre carte et reflet
-
 export default function GallerySection() {
+  const scrollRef = useRef(null)
   const [current, setCurrent] = useState(0)
-  const touchX = useRef(null)
-  const stageH = CH + REF_GAP + REF_H
 
-  const go = (dir) => setCurrent((i) => (i + dir + N) % N)
+  /* ── Détection de la carte active via IntersectionObserver ── */
+  useEffect(() => {
+    const container = scrollRef.current
+    if (!container) return
 
-  const onTouchStart = (e) => { touchX.current = e.touches[0].clientX }
-  const onTouchEnd   = (e) => {
-    if (touchX.current === null) return
-    const dx = e.changedTouches[0].clientX - touchX.current
-    if (Math.abs(dx) > 35) go(dx > 0 ? -1 : 1)
-    touchX.current = null
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+            setCurrent(Number(entry.target.dataset.index))
+          }
+        })
+      },
+      { root: container, threshold: 0.55 }
+    )
+
+    const cards = container.querySelectorAll('[data-index]')
+    cards.forEach((c) => observer.observe(c))
+    return () => observer.disconnect()
+  }, [])
+
+  /* ── Scroll programmatique pour les dots ── */
+  const goTo = (i) => {
+    const container = scrollRef.current
+    if (!container) return
+    const card = container.querySelector(`[data-index="${i}"]`)
+    if (card) card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }
 
   return (
-    <section className="py-20 bg-stone-50 overflow-hidden select-none">
-
+    <section className="py-20 bg-stone-50">
       {/* Titre */}
       <div className="text-center mb-10 px-6">
         <div className="text-amber-600 font-medium mb-3 uppercase tracking-wider text-sm">
@@ -49,113 +55,85 @@ export default function GallerySection() {
         <h2 className="text-4xl font-serif text-stone-900">La vie à la ferme</h2>
       </div>
 
-      {/* Scène 3D — perspective posée ici */}
+      {/* ── Scroll natif snap ── */}
       <div
-        className="relative mx-auto"
+        ref={scrollRef}
+        className="scroll-snap-x flex overflow-x-auto"
         style={{
-          height: stageH,
-          perspective: '900px',
-          perspectiveOrigin: '50% 38%',
+          scrollSnapType: 'x mandatory',
+          WebkitOverflowScrolling: 'touch',
+          gap: 14,
+          /* Padding pour centrer la 1ère et dernière carte */
+          paddingLeft: 'calc((100% - 68vw) / 2)',
+          paddingRight: 'calc((100% - 68vw) / 2)',
+          /* Espace sous pour le reflet */
+          paddingBottom: 80,
         }}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
       >
-        {photos.map((photo, index) => {
-          let pos = index - current
-          if (pos >  N / 2) pos -= N
-          if (pos < -N / 2) pos += N
-          if (Math.abs(pos) > 1) return null
-
-          const isCenter = pos === 0
-          const W = isCenter ? CW : SW
-          const H = isCenter ? CH : SH
-
-          // translateX en px (centré via -50%) + décalage latéral fixe
-          const txPx  = pos * SIDE_OFFSET
-          const rotY  = pos * -52
-          const topPx = isCenter ? 0 : Math.round((CH - SH) / 2)
-
-          return (
+        {photos.map((photo, i) => (
+          <div
+            key={photo.src}
+            data-index={i}
+            style={{
+              flexShrink: 0,
+              width: '68vw',
+              maxWidth: 460,
+              scrollSnapAlign: 'center',
+            }}
+          >
+            {/* ── Image principale ── */}
             <div
-              key={photo.src}
-              onClick={() => !isCenter && go(pos)}
+              className="relative overflow-hidden rounded-2xl shadow-xl"
+              style={{ height: '44vw', maxHeight: 300 }}
+            >
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                draggable={false}
+                sizes="(max-width: 768px) 68vw, 460px"
+                className="object-cover pointer-events-none"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+              <span className="absolute bottom-4 left-4 text-white font-serif text-base drop-shadow">
+                {photo.label}
+              </span>
+            </div>
+
+            {/* ── Reflet ── */}
+            <div
               style={{
-                position: 'absolute',
-                left: '50%',
-                top: topPx,
-                width: W,
-                cursor: isCenter ? 'grab' : 'pointer',
-                zIndex: isCenter ? 10 : 5,
-                // Seul transform + opacity en transition → GPU, pas de layout
-                transform: `translateX(calc(-50% + ${txPx}px)) rotateY(${rotY}deg)`,
-                opacity: isCenter ? 1 : 0.58,
-                transition: 'transform 0.48s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.48s ease',
-                willChange: 'transform, opacity',
+                marginTop: 5,
+                height: 70,
+                overflow: 'hidden',
+                transform: 'scaleY(-1)',
+                opacity: 0.38,
+                WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
+                maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
               }}
             >
-              {/* ── Image principale ── */}
-              <div
-                className="relative overflow-hidden rounded-2xl shadow-2xl"
-                style={{ height: H }}
-              >
+              <div className="relative" style={{ height: 70 }}>
                 <Image
                   src={photo.src}
-                  alt={photo.alt}
+                  alt=""
                   fill
                   draggable={false}
-                  priority={isCenter}
-                  sizes={isCenter ? '320px' : '130px'}
+                  sizes="460px"
                   className="object-cover pointer-events-none"
+                  aria-hidden="true"
                 />
-                {isCenter && (
-                  <>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
-                    <span className="absolute bottom-4 left-4 text-white font-serif text-lg drop-shadow-lg">
-                      {photo.label}
-                    </span>
-                  </>
-                )}
               </div>
-
-              {/* ── Reflet (centre uniquement) ── */}
-              {isCenter && (
-                <div
-                  style={{
-                    marginTop: REF_GAP,
-                    height: REF_H,
-                    width: W,
-                    overflow: 'hidden',
-                    borderRadius: '0 0 12px 12px',
-                    transform: 'scaleY(-1)',
-                    opacity: 0.42,
-                    WebkitMaskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
-                    maskImage: 'linear-gradient(to top, black 0%, transparent 100%)',
-                  }}
-                >
-                  <div className="relative" style={{ height: REF_H }}>
-                    <Image
-                      src={photo.src}
-                      alt=""
-                      fill
-                      draggable={false}
-                      sizes="320px"
-                      className="object-cover pointer-events-none"
-                      aria-hidden="true"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
-          )
-        })}
+          </div>
+        ))}
       </div>
 
-      {/* Dots */}
-      <div className="flex justify-center gap-2 mt-5">
+      {/* ── Dots ── */}
+      <div className="flex justify-center gap-2 -mt-2">
         {photos.map((_, i) => (
           <button
             key={i}
-            onClick={() => setCurrent(i)}
+            onClick={() => goTo(i)}
             aria-label={`Photo ${i + 1}`}
             className={`rounded-full transition-all duration-300 ${
               i === current
