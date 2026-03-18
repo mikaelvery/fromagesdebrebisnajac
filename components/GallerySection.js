@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 
 const photos = [
@@ -37,18 +37,72 @@ function Reflection({ src }) {
 
 export default function GallerySection() {
   const [current, setCurrent] = useState(0)
-  const touchX = useRef(null)
 
-  /* ── Navigation infinie ── */
+  /* ══════════════════════════════════════════
+     MOBILE — track qui suit le doigt en live
+  ══════════════════════════════════════════ */
+  const trackRef    = useRef(null)
+  const wrapRef     = useRef(null)
+  const touchXM     = useRef(null)
+  const sliding     = useRef(false)   // animation en cours → bloquer nouveau drag
+  const cardW       = useRef(390)     // largeur de la carte = largeur du conteneur
+
+  // Positionne le track sans (ou avec) transition
+  const setTrack = useCallback((px, animate = false) => {
+    if (!trackRef.current) return
+    trackRef.current.style.transition = animate ? 'transform 0.32s ease' : 'none'
+    trackRef.current.style.transform  = `translateX(${px}px)`
+  }, [])
+
+  // À chaque changement de current, on recentre silencieusement
+  useEffect(() => {
+    const w = wrapRef.current?.clientWidth || window.innerWidth
+    cardW.current = w
+    setTrack(-w, false)
+  }, [current, setTrack])
+
+  const onMobileStart = (e) => {
+    if (sliding.current) return
+    cardW.current = wrapRef.current?.clientWidth || window.innerWidth
+    touchXM.current = e.touches[0].clientX
+  }
+
+  const onMobileMove = (e) => {
+    if (touchXM.current === null || sliding.current) return
+    const dx = e.touches[0].clientX - touchXM.current
+    setTrack(-cardW.current + dx, false)   // suit le doigt en temps réel
+  }
+
+  const onMobileEnd = (e) => {
+    if (touchXM.current === null) return
+    const dx = e.changedTouches[0].clientX - touchXM.current
+    touchXM.current = null
+
+    if (Math.abs(dx) > 45) {
+      const dir = dx > 0 ? -1 : 1
+      sliding.current = true
+      setTrack(-cardW.current + dir * -cardW.current, true)   // anime vers carte voisine
+      setTimeout(() => {
+        setCurrent(prev => mod(prev + dir, N))   // met à jour l'index
+        // Le useEffect recentrera le track sans transition
+        sliding.current = false
+      }, 320)
+    } else {
+      setTrack(-cardW.current, true)   // snap back
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     DESKTOP — swipe simple (animation CSS)
+  ══════════════════════════════════════════ */
+  const touchXD = useRef(null)
   const go = (dir) => setCurrent(i => mod(i + dir, N))
-
-  /* ── Swipe tactile (mobile ET desktop) ── */
-  const onTouchStart = (e) => { touchX.current = e.touches[0].clientX }
-  const onTouchEnd   = (e) => {
-    if (touchX.current === null) return
-    const dx = e.changedTouches[0].clientX - touchX.current
+  const onDesktopStart = (e) => { touchXD.current = e.touches[0].clientX }
+  const onDesktopEnd   = (e) => {
+    if (!touchXD.current) return
+    const dx = e.changedTouches[0].clientX - touchXD.current
+    touchXD.current = null
     if (Math.abs(dx) > 40) go(dx > 0 ? -1 : 1)
-    touchX.current = null
   }
 
   /* ── Style 3D pour desktop selon la position offset (-1, 0, +1) ── */
@@ -82,33 +136,50 @@ export default function GallerySection() {
       </div>
 
       {/* ════════════════════════════
-          MOBILE : 1 seule image
+          MOBILE : track qui suit le doigt
       ════════════════════════════ */}
       <div
-        className="md:hidden px-5"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
+        ref={wrapRef}
+        className="md:hidden overflow-hidden"
+        style={{ touchAction: 'pan-y' }}
+        onTouchStart={onMobileStart}
+        onTouchMove={onMobileMove}
+        onTouchEnd={onMobileEnd}
       >
+        {/* Track : 3 cartes côte à côte, translateX positionne la centrale */}
         <div
-          className="relative overflow-hidden"
-          style={{ height: '62vw', boxShadow: '0 8px 28px rgba(0,0,0,0.2)' }}
+          ref={trackRef}
+          style={{
+            display: 'flex',
+            width: '300vw',
+            transform: 'translateX(-100vw)',   // valeur initiale SSR
+            willChange: 'transform',
+          }}
         >
-          <Image
-            key={current}
-            src={photos[current].src}
-            alt={photos[current].alt}
-            fill
-            priority
-            sizes="90vw"
-            draggable={false}
-            className="object-cover pointer-events-none animate-fade"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
-          <span className="absolute bottom-4 left-4 text-white font-serif text-base drop-shadow">
-            {photos[current].label}
-          </span>
+          {[mod(current - 1, N), current, mod(current + 1, N)].map((idx, pos) => (
+            <div key={pos} style={{ flexShrink: 0, width: '100vw', paddingInline: '20px' }}>
+              <div
+                className="relative overflow-hidden"
+                style={{ height: '62vw', boxShadow: '0 8px 28px rgba(0,0,0,0.22)' }}
+              >
+                <Image
+                  src={photos[idx].src}
+                  alt={photos[idx].alt}
+                  fill
+                  priority={pos === 1}
+                  sizes="100vw"
+                  draggable={false}
+                  className="object-cover pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+                <span className="absolute bottom-4 left-4 text-white font-serif text-base drop-shadow">
+                  {photos[idx].label}
+                </span>
+              </div>
+              {pos === 1 && <Reflection src={photos[idx].src} />}
+            </div>
+          ))}
         </div>
-        <Reflection src={photos[current].src} />
       </div>
 
       {/* ════════════════════════════
@@ -117,8 +188,8 @@ export default function GallerySection() {
       <div
         className="hidden md:block relative"
         style={{ height: '38vw', maxHeight: 500, perspective: '1200px', perspectiveOrigin: '50% 40%' }}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
+        onTouchStart={onDesktopStart}
+        onTouchEnd={onDesktopEnd}
       >
         {[-1, 0, 1].map((offset) => {
           const idx = mod(current + offset, N)
