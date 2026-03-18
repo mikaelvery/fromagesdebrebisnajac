@@ -41,9 +41,9 @@ export default function GallerySection() {
       }
 
       const ratio   = Math.max(-1, Math.min(1, dist / maxDist))
-      const rotateY = ratio * -28          // °  max 28° (visible et pas trop fin)
-      const scale   = 1 - Math.abs(ratio) * 0.10
-      const opacity = 1 - Math.abs(ratio) * 0.25  // côtés bien visibles
+      const rotateY = ratio * -42          // °  plus d'angle comme chezestela
+      const scale   = 1 - Math.abs(ratio) * 0.12
+      const opacity = 1 - Math.abs(ratio) * 0.30
 
       // perspective() dans le transform = chaque carte a son propre point de fuite
       card.style.transform = `perspective(900px) rotateY(${rotateY}deg) scale(${scale})`
@@ -112,20 +112,24 @@ export default function GallerySection() {
               flexShrink: 0,
               width: 'min(58vw, 420px)',
               scrollSnapAlign: 'center',
+              scrollSnapStop: 'always',   // 1 swipe = 1 image max
               willChange: 'transform, opacity',
             }}
           >
-            {/* ── Image ── */}
+            {/* ── Image — coins carrés, ombre carrée ── */}
             <div
-              className="relative overflow-hidden rounded-2xl shadow-xl"
-              style={{ height: 'min(38vw, 270px)' }}
+              className="relative overflow-hidden"
+              style={{
+                height: 'min(38vw, 270px)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.22)',
+              }}
             >
               <Image
                 src={photo.src}
                 alt={photo.alt}
                 fill
                 draggable={false}
-                sizes="(max-width: 768px) 68vw, 460px"
+                sizes="(max-width: 768px) 58vw, 420px"
                 className="object-cover pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
@@ -134,10 +138,10 @@ export default function GallerySection() {
               </span>
             </div>
 
-            {/* ── Reflet ── */}
+            {/* ── Reflet collé (marginTop: 0) ── */}
             <div
               style={{
-                marginTop: 5,
+                marginTop: 0,
                 height: 68,
                 overflow: 'hidden',
                 transform: 'scaleY(-1)',
@@ -152,7 +156,7 @@ export default function GallerySection() {
                   alt=""
                   fill
                   draggable={false}
-                  sizes="460px"
+                  sizes="420px"
                   className="object-cover pointer-events-none"
                   aria-hidden="true"
                 />
